@@ -85,9 +85,9 @@ public class Superhero {
     }
 
     /**
-     * activate this superhero's superpower
+     * activate this superhero's superpowers
      */
-    public void activateSuperpower(){
+    public void activateSuperpowers(){
 
         for (Superpower superpower: superpowers) {
             System.out.printf("%s: ", this.name);

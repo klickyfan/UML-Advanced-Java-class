@@ -25,7 +25,7 @@ public class Game {
         heroes.add(new Superhero("Git the Mighty", Gender.Female, gitTheMightySuperpowers, null,"I've got this!"));
 
         for (Superhero hero: heroes) {
-            hero.activateSuperpower();
+            hero.activateSuperpowers();
             hero.attackEnemy("C#");
         }
     }
