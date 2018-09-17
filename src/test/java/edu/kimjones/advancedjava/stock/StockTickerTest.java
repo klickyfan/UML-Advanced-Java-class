@@ -13,24 +13,28 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.when;
 
 /**
- * This test class shows how to use Mocks to test a class that has an external dependency
+ * This class is for testing the StockTicker class
+ *
+ * @author Kim Jones and Spencer Marks
  */
 public class StockTickerTest {
 
-
     /**
-     * This method verifies that the correct number of days is returned
+     * This method verifies (using mocking) that the correct number of days is returned
      * by the StockTicker getStockHistory method
      */
     @Test
     public void testGetStockHistoryNumberOfDays() {
 
-        /* we want to 'mock' the external dependency which is the   StockService
-         * so that we can test just the StockTicker class. Here is how to setup the mock
+        /*
+         * we want to 'mock' the external dependency which is the StockService so that we can test just
+         * the StockTicker class
          */
+
+        // set up the mock
         StockService stockServiceMock = Mockito.mock(StockService.class);
 
-        // next create the data we expect the service to return
+        // create the data we expect the service to return
         Date endDate = Calendar.getInstance().getTime();
         Calendar startCalendar = Calendar.getInstance();
         int NumberOfDayOfData = 15;
@@ -43,18 +47,19 @@ public class StockTickerTest {
         // tell the mock service to return the data the getQuote() method is called with a specific symbol
         when(stockServiceMock.getStockQuote(any(String.class),any(Date.class))).thenReturn(new StockQuote(stockSymbol, expectedPrice, Calendar.getInstance().getTime()));
 
-        // now create the StickTicker instance to test
+        // create the StickTicker instance to test
         StockTicker stockTicker = new StockTicker(stockServiceMock);
 
-        // now execute the method we want to test
+        // execute the method we want to test
         List<StockQuote> stockHistory = stockTicker.getStockHistory(stockSymbol, startDate,endDate);
 
-        // now verify that it returned the expected results.
+        // verify that it returned the expected results
 
         // there should 15 days of data
         assertTrue("There should be 15 days of data", stockHistory.size() == NumberOfDayOfData);
-
     }
+
+
 }
 
 

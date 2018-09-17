@@ -21,11 +21,12 @@ public class IEXTradingStockService implements StockService {
     /**
      * @param symbol        a symbol of a company
      * @param date          a date
-     * @return              a stock quote for the company with the given symbol on the given date
+     * @return              a stock quote for the company with the given symbol on the given date or null if no quote
+     *                      is available
      */
     public StockQuote getStockQuote(String symbol, Date date) {
 
-        final IEXTradingClient iexTradingClient = IEXTradingClient.create();
+        final IEXTradingClient tradingClient = IEXTradingClient.create();
 
         /*
 
@@ -33,14 +34,14 @@ public class IEXTradingStockService implements StockService {
 
         // get historical data
 
-        final List<HistoricalStats> historicalStatsList = iexTradingClient.executeRequest(new HistoricalStatsRequestBuilder()
+        final List<HistoricalStats> historicalStatsList = tradingClient.executeRequest(new HistoricalStatsRequestBuilder()
                 .withDate(YearMonth.of(2017, 5))
                 .build());
         System.out.println(historicalStatsList);
 
         // get current stock price
 
-        final Quote quoteFromIEXTrading = iexTradingClient.executeRequest(new QuoteRequestBuilder()
+        final Quote quoteFromIEXTrading = tradingClient.executeRequest(new QuoteRequestBuilder()
                 .withSymbol(symbol)
                 .build());
         BigDecimal price = quoteFromIEXTrading.getLatestPrice();
@@ -59,7 +60,7 @@ public class IEXTradingStockService implements StockService {
 
         while (iterations < MAX_ITERATIONS) {
 
-            final List<Chart> chartList = iexTradingClient.executeRequest(new ChartRequestBuilder()
+            final List<Chart> chartList = tradingClient.executeRequest(new ChartRequestBuilder()
                     .withSymbol("AAPL")
                     //.withDate(LocalDate.of(2018, 8, 13))
                     .withDate(localDate)
