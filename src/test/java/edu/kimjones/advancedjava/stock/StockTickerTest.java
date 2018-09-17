@@ -58,8 +58,6 @@ public class StockTickerTest {
         // there should 15 days of data
         assertTrue("There should be 15 days of data", stockHistory.size() == NumberOfDayOfData);
     }
-
-
 }
 
 

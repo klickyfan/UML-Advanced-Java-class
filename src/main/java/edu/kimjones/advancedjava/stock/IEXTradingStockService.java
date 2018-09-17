@@ -85,6 +85,5 @@ public class IEXTradingStockService implements StockService {
 
         // if here, there is no stock price available for date or the MAX_ITERATIONS days before
         return null;
-
     }
 }

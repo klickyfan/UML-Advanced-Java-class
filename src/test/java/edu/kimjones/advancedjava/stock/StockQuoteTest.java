@@ -15,7 +15,6 @@ import static org.junit.Assert.assertFalse;
  *
  * @author Kim Jones
  */
-
 public class StockQuoteTest {
 
     private String stockSymbol = "AAPL";
@@ -65,6 +64,5 @@ public class StockQuoteTest {
     @Test
     public void testDateNegative() {
         assertFalse("date does not match", this.dateNotRecorded == this.stockQuote.getDateRecorded());
-
     }
 }
