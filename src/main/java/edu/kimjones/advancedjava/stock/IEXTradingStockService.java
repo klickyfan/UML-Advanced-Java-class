@@ -1,10 +1,15 @@
 package edu.kimjones.advancedjava.stock;
 
 import pl.zankowski.iextrading4j.api.stocks.Chart;
+import pl.zankowski.iextrading4j.api.stocks.Quote;
 import pl.zankowski.iextrading4j.client.IEXTradingClient;
 import pl.zankowski.iextrading4j.client.rest.request.stocks.ChartRequestBuilder;
+import pl.zankowski.iextrading4j.client.rest.request.stocks.QuoteRequestBuilder;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -19,36 +24,40 @@ public class IEXTradingStockService implements StockService {
     private static final int MAX_ITERATIONS = 10;
 
     /**
-     * @param symbol        a symbol of a company
-     * @param date          a date
-     * @return              a stock quote for the company with the given symbol on the given date or null if no quote
-     *                      is available
+     * This method gets a stock quote (containing the current price) for the company indicated by the given symbol.
+     *
+     * @param symbol    a stock symbol of a company, e.g. "APPL" for Apple
+     * @return          a stock quote (containing the current price) for the company with the given symbol
      */
-    public StockQuote getStockQuote(String symbol, Date date) {
+    public StockQuote getStockQuote(String symbol) {
 
         final IEXTradingClient tradingClient = IEXTradingClient.create();
-
-        /*
-
-        PLEASE IGNORE THESE COMMENTS: just playing around with this API!
-
-        // get historical data
-
-        final List<HistoricalStats> historicalStatsList = tradingClient.executeRequest(new HistoricalStatsRequestBuilder()
-                .withDate(YearMonth.of(2017, 5))
-                .build());
-        System.out.println(historicalStatsList);
-
-        // get current stock price
 
         final Quote quoteFromIEXTrading = tradingClient.executeRequest(new QuoteRequestBuilder()
                 .withSymbol(symbol)
                 .build());
         BigDecimal price = quoteFromIEXTrading.getLatestPrice();
 
-        StockQuote quote = new StockQuote(symbol, price, date);
+        Calendar cal = Calendar.getInstance();
+        Date date = cal.getTime();
 
-        */
+        StockQuote quote = new StockQuote(symbol, price, cal.getTime());
+
+        return quote;
+    }
+
+    /**
+     * This method gets a stock quote (containing the current price) for the company indicated by the given symbol on
+     * the given date (or null if it can't obtain a quote for that date).
+     *
+     * @param symbol    a stock symbol of a company, e.g. "APPL" for Apple
+     * @param date      a date
+     * @return          a stock quote (containing the current price) for the company with the given symbol or null if
+     *                  no quote is available
+     */
+    public StockQuote getStockQuote(String symbol, Date date) {
+
+        final IEXTradingClient tradingClient = IEXTradingClient.create();
 
         java.sql.Date sqlDate = new java.sql.Date(date.getTime());
         LocalDate localDate = sqlDate.toLocalDate();
@@ -85,5 +94,23 @@ public class IEXTradingStockService implements StockService {
 
         // if here, there is no stock price available for date or the MAX_ITERATIONS days before
         return null;
+    }
+
+    /**
+     * This function gets a list of stock quotes for the company indicated by the given symbol.
+     *
+     * @param symbol    a stock symbol of a company, e.g. "APPL" for Apple
+     * @param from      the date of the first stock quote
+     * @param until     the date of the last stock quote
+     * @return          a list of stock quotes or the company with the given symbol, one for each day in the date range
+     *                  given
+     */
+    public List<StockQuote> getStockQuoteList(String symbol, Calendar from, Calendar until) {
+
+        List<StockQuote> stockQuoteList = new ArrayList<StockQuote>();
+
+        /** TO DO! **/
+
+        return stockQuoteList;
     }
 }

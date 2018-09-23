@@ -1,15 +1,19 @@
 package edu.kimjones.advancedjava.stock;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Date;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.*;
 
+/**
+ * This class is for testing the IEXTradingService class.
+ *
+ * @author Kim Jones
+ */
 public class IEXTradingServiceTest {
 
     private String stockSymbol = "AAPL";
@@ -17,16 +21,14 @@ public class IEXTradingServiceTest {
     private Date stockDatePriceAvailable;
     private Date stockDatePriceUnavailable;
 
-    // the closing price on the date we will test was 223.90
-    private BigDecimal stockPriceExpected = BigDecimal.valueOf(223.90);
-    private BigDecimal stockPriceNotExpected = BigDecimal.valueOf(1.0);
-
     private IEXTradingStockService iexTradingStockService;
 
-    private StockQuote quotePriceAvailable;
-    private StockQuote quotePriceUnavailable;
+    private StockQuote quoteNow;
 
-    @org.junit.Before
+    private StockQuote quoteOnDatePriceAvailable;
+    private StockQuote quoteOnDatePriceUnavailable;
+
+    @Before
     public void setUp() throws Exception {
 
         LocalDate localDate0 = LocalDate.of(2018, 9, 12);
@@ -37,25 +39,36 @@ public class IEXTradingServiceTest {
 
         this.iexTradingStockService = new IEXTradingStockService();
 
-        this.quotePriceAvailable = iexTradingStockService.getStockQuote(this.stockSymbol, this.stockDatePriceAvailable);
-        this.quotePriceUnavailable = iexTradingStockService.getStockQuote(this.stockSymbol, this.stockDatePriceUnavailable);
+        this.quoteNow = iexTradingStockService.getStockQuote(this.stockSymbol);
+
+        this.quoteOnDatePriceAvailable = iexTradingStockService.getStockQuote(this.stockSymbol, this.stockDatePriceAvailable);
+        this.quoteOnDatePriceUnavailable = iexTradingStockService.getStockQuote(this.stockSymbol, this.stockDatePriceUnavailable);
+    }
+
+    @Test
+    public void testGetStockQuoteNowPositive() {
+        assertEquals("price is as expected", this.quoteNow.getStockPrice(), this.quoteNow.getStockPrice());
+    }
+
+    @Test
+    public void testGetStockQuoteNowNegative() {
+        assertFalse("price is not as expected", BigDecimal.valueOf(0.0) == this.quoteNow.getStockPrice());
     }
 
     @Test
     public void testGetStockQuotePriceAvailablePositive() {
-        // StupidStockService..getStockQuote claims to always return a price of $100.00
-        assertEquals("price is as expected", this.stockPriceExpected, this.quotePriceAvailable.getStockPrice());
+        assertEquals("price is as expected", BigDecimal.valueOf(223.9), this.quoteOnDatePriceAvailable.getStockPrice());
     }
 
     @Test
     public void testGetStockQuotePriceAvailableNegative() {
-        // StupidStockService..getStockQuote claims to always return a price of $100.00
-        assertFalse("price is not as expected", this.stockPriceNotExpected == this.quotePriceAvailable.getStockPrice());
+        assertFalse("price is not as expected", BigDecimal.valueOf(1.0) == this.quoteOnDatePriceAvailable.getStockPrice());
     }
 
     @Test
     public void testGetStockQuotePriceUnavailableNull() {
-        // StupidStockService..getStockQuote claims to always return a price of $100.00
-        assertNull("quote is null", this.quotePriceUnavailable);
+        assertNull("quote is null", this.quoteOnDatePriceUnavailable);
     }
+
+    /** To do: tests for getStockQuoteList methods (see those in BasicStockServiceTest) **/
 }

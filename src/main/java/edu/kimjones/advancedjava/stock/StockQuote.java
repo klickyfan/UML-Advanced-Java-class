@@ -2,24 +2,25 @@ package edu.kimjones.advancedjava.stock;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.Objects;
 
 /**
  * This class models a stock price quote.
  *
  * @author Kim Jones (using code obtained from Spencer Marks)
  */
-public class StockQuote {
+final public class StockQuote {
 
-    private String stockSymbol;
-    private BigDecimal stockPrice;
-    private Date dateRecorded;
+    final private String stockSymbol;
+    final private BigDecimal stockPrice;
+    final private Date dateRecorded;
 
     /**
      * This constructor creates a new stock quote.
      *
-     * @param stockSymbol           the symbol of a company
-     * @param stockPrice            the price of that company's stock
-     * @param dateRecorded          the date of the price
+     * @param stockSymbol       the symbol of a company
+     * @param stockPrice        the price of that company's stock
+     * @param dateRecorded      the date of the price
      */
     public StockQuote(String stockSymbol,BigDecimal stockPrice, Date dateRecorded) {
         this.stockSymbol = stockSymbol;
@@ -46,5 +47,51 @@ public class StockQuote {
      */
     public Date getDateRecorded() {
         return dateRecorded;
+    }
+
+    /**
+     * This method and the next are needed to enable testing for StockQuote (or array of StockQuote) equality.
+     *
+     * @param obj            a StockQuote instance
+     * @return               true if two StockQuotes are equal
+     */
+    @Override
+    public boolean equals(Object obj) {
+
+        if (obj == null)
+            return false;
+
+        if (obj == this)
+            return true;
+
+        if (!(obj instanceof StockQuote))
+            return false;
+
+        StockQuote rhs = (StockQuote) obj;
+
+        if (stockPrice == null && rhs.stockPrice != null)
+            return false;
+
+        if (stockPrice != null && rhs.stockPrice == null)
+            return false;
+
+        // note use of compareTo to compare BigDecimal stockPrices
+        return ((Objects.equals(stockSymbol, rhs.stockSymbol)) &&
+                ((stockPrice == null && rhs.stockPrice == null) || (stockPrice.compareTo(rhs.stockPrice) == 0)) &&
+                (Objects.equals(dateRecorded, rhs.dateRecorded)));
+    }
+
+    /**
+     * This method and the former are needed to enable testing for StockQuote (or array of StockQuote) equality.
+     *
+     * @return               an integer which uniquely identifies a StockQuote instance
+     */
+    @Override
+    public int hashCode() {
+        // note conversion of BigDecimal stockPrice to double
+        if (stockPrice != null)
+            return Objects.hash(stockSymbol, stockPrice.doubleValue(), dateRecorded);
+        else
+            return Objects.hash(stockSymbol, dateRecorded);
     }
 }
