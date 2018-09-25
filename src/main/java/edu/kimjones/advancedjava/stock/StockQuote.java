@@ -88,7 +88,8 @@ final public class StockQuote {
      */
     @Override
     public int hashCode() {
-        // note conversion of BigDecimal stockPrice to double
+        // Note conversion of BigDecimal stockPrice to double. We have to do this because two mathematically
+        // equivalent BigDecimals could product different hash codes due to scaling.
         if (stockPrice != null)
             return Objects.hash(stockSymbol, stockPrice.doubleValue(), dateRecorded);
         else
