@@ -1,5 +1,6 @@
 package edu.kimjones.advancedjava.stock;
 
+import nl.jqno.equalsverifier.EqualsVerifier;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -64,5 +65,10 @@ public class StockQuoteTest {
     @Test
     public void testDateNegative() {
         assertFalse("date does not match", this.dateNotRecorded == this.stockQuote.getDateRecorded());
+    }
+
+    @Test
+    public void equalsContract() {
+        EqualsVerifier.forClass(StockQuote.class).verify();
     }
 }
