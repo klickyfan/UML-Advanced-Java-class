@@ -2,6 +2,8 @@ package edu.kimjones.advancedjava.stock;
 
 import org.junit.Test;
 
+import java.io.IOException;
+
 /**
  * This class is for testing the StockQuoteApplication class (the main entry point for the stock quote application).
  *
@@ -18,12 +20,21 @@ public class StockQuoteApplicationTest {
         args[1] = "9/20/2018";
         args[2] = "9/23/2018";
 
-        StockQuoteApplication.main(args);
+        try {
+            StockQuoteApplication.main(args);
+        }
+        catch(IOException e) {
+        }
     }
 
     @Test(expected = NullPointerException.class)
     public void testMainNegative() {
-        StockQuoteApplication.main(null);
+
+        try {
+            StockQuoteApplication.main(null);
+        }
+        catch(IOException e) {
+        }
     }
 
 }
