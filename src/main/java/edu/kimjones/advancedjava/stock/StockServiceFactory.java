@@ -16,9 +16,17 @@ public class StockServiceFactory {
 
     /**
      * @return an object implementing the {@code StockService} interface
+     * @throws StockServiceException if unable to do this
      */
     public static final StockService createStockService() throws StockServiceException {
 
-        return new BasicStockService(); // replace as needed with any stock service
+        try {
+            return new BasicStockService(); // replace as needed with any stock service
+        }
+        catch (Exception e)
+        {
+            System.err.println(e.getMessage());
+            throw new StockServiceException();
+        }
     }
 }

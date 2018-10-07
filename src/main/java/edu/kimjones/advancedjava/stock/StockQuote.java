@@ -1,5 +1,7 @@
 package edu.kimjones.advancedjava.stock;
 
+import javax.annotation.concurrent.Immutable;
+import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.Objects;
@@ -9,6 +11,7 @@ import java.util.Objects;
  *
  * @author Kim Jones (using code obtained from Spencer Marks)
  */
+@Immutable
 final public class StockQuote {
 
     final private String stockSymbol;
@@ -22,10 +25,10 @@ final public class StockQuote {
      * @param stockPrice        the price of that company's stock
      * @param dateRecorded      the date of the price
      */
-    public StockQuote(String stockSymbol,BigDecimal stockPrice, Date dateRecorded) {
+    public StockQuote(@NotNull String stockSymbol, @NotNull BigDecimal stockPrice, @NotNull Date dateRecorded) {
         this.stockSymbol = stockSymbol;
         this.stockPrice = stockPrice;
-        this.dateRecorded = dateRecorded;
+        this.dateRecorded = new Date(dateRecorded.getTime()); // make safe copy
     }
 
     /**
@@ -75,7 +78,8 @@ final public class StockQuote {
         if (stockPrice != null && rhs.stockPrice == null)
             return false;
 
-        // note use of compareTo to compare BigDecimal stockPrices
+        // Note use of compareTo to compare BigDecimal stockPrices. We have to use this instead of equals because two
+        // equals may be false for mathematically equivalent BigDecimals due to scaling.
         return ((Objects.equals(stockSymbol, rhs.stockSymbol)) &&
                 ((stockPrice == null && rhs.stockPrice == null) || (stockPrice.compareTo(rhs.stockPrice) == 0)) &&
                 (Objects.equals(dateRecorded, rhs.dateRecorded)));
@@ -88,8 +92,9 @@ final public class StockQuote {
      */
     @Override
     public int hashCode() {
-        // Note conversion of BigDecimal stockPrice to double. We have to do this because two mathematically
-        // equivalent BigDecimals could product different hash codes due to scaling.
+
+        // Note conversion of BigDecimal stockPrice to double. We have to do this because two mathematically equivalent
+        // BigDecimals could product different hash codes due to scaling.
         if (stockPrice != null)
             return Objects.hash(stockSymbol, stockPrice.doubleValue(), dateRecorded);
         else
