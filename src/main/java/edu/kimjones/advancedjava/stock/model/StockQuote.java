@@ -1,4 +1,4 @@
-package edu.kimjones.advancedjava.stock;
+package edu.kimjones.advancedjava.stock.model;
 
 import javax.annotation.concurrent.Immutable;
 import javax.validation.constraints.NotNull;
@@ -80,9 +80,11 @@ final public class StockQuote {
 
         // Note use of compareTo to compare BigDecimal stockPrices. We have to use this instead of equals because two
         // equals may be false for mathematically equivalent BigDecimals due to scaling.
-        return ((Objects.equals(stockSymbol, rhs.stockSymbol)) &&
-                ((stockPrice == null && rhs.stockPrice == null) || (stockPrice.compareTo(rhs.stockPrice) == 0)) &&
-                (Objects.equals(dateRecorded, rhs.dateRecorded)));
+        boolean test0  = Objects.equals(stockSymbol, rhs.stockSymbol);
+        boolean test1 = (stockPrice == null && rhs.stockPrice == null) || (stockPrice.compareTo(rhs.stockPrice) == 0);
+        boolean test2 = Objects.equals(dateRecorded, rhs.dateRecorded);
+
+        return test0 && test1 && test2;
     }
 
     /**

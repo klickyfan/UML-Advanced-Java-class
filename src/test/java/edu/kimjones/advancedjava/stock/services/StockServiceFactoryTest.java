@@ -1,4 +1,4 @@
-package edu.kimjones.advancedjava.stock;
+package edu.kimjones.advancedjava.stock.services;
 
 import org.junit.Before;
 import org.junit.Test;
