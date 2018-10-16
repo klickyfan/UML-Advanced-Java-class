@@ -61,14 +61,9 @@ final public class StockQuote {
     @Override
     public boolean equals(Object obj) {
 
-        if (obj == null)
-            return false;
+        if (obj == this) return true;
 
-        if (obj == this)
-            return true;
-
-        if (!(obj instanceof StockQuote))
-            return false;
+        if (obj == null || !(obj instanceof StockQuote)) return false;
 
         StockQuote rhs = (StockQuote) obj;
 

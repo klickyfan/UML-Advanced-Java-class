@@ -1,5 +1,6 @@
 package edu.kimjones.advancedjava.stock;
 
+import edu.kimjones.advancedjava.stock.utilities.DatabaseInitializationException;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -12,7 +13,7 @@ import java.io.IOException;
 public class StockQuoteApplicationTest {
 
     @Test
-    public void testMainPositive() throws IOException {
+    public void testMainPositive() throws IOException, DatabaseInitializationException {
 
         java.lang.String[] args = new java.lang.String[3];
 
@@ -24,7 +25,7 @@ public class StockQuoteApplicationTest {
     }
 
     @Test(expected = NullPointerException.class)
-    public void testMainNegative() throws IOException {
+    public void testMainNegative() throws IOException, DatabaseInitializationException {
 
         StockQuoteApplication.main(null);
     }

@@ -1,6 +1,7 @@
 package edu.kimjones.advancedjava.stock.model;
 
 import nl.jqno.equalsverifier.EqualsVerifier;
+
 import org.junit.Before;
 import org.junit.Test;
 
@@ -68,7 +69,7 @@ public class StockQuoteTest {
     }
 
     @Test
-    public void equalsContract() {
+    public void testEqualsContract() {
         EqualsVerifier.forClass(StockQuote.class).verify();
     }
 }

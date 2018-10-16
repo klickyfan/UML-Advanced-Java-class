@@ -1,7 +1,6 @@
 package edu.kimjones.advancedjava.stock.services;
 
 import edu.kimjones.advancedjava.stock.model.StockQuote;
-import edu.kimjones.advancedjava.stock.utilities.DatabaseConnectionException;
 import edu.kimjones.advancedjava.stock.utilities.DatabaseUtility;
 import org.junit.After;
 import org.junit.Before;
@@ -9,8 +8,6 @@ import org.junit.Test;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -52,10 +49,10 @@ public class DatabaseStockServiceTest {
     @Before
     public void setUp() throws Exception {
 
-        DatabaseUtility.initializeDatabase("service_test.sql");
+        DatabaseUtility.initializeDatabase(DatabaseUtility.initializationFile);
+        DatabaseUtility.initializeDatabase("./src/main/sql/add_stock_service_test_data.sql");
 
         this.databaseStockService = new DatabaseStockService();
-
 
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         this.stockDate = dateFormat.parse("2018-09-21 00:00");
@@ -76,7 +73,7 @@ public class DatabaseStockServiceTest {
         this.databaseHourlyStockQuoteListFirstItemExpected =
                 new StockQuote(
                         this.stockSymbol,
-                        new BigDecimal(118.88).setScale(2, RoundingMode.HALF_UP), // see service_test.sql
+                        new BigDecimal(118.88).setScale(2, RoundingMode.HALF_UP), // see add_stock_service_test_data.sql
                         dateFormat.parse("2018-09-20 10:00"));
         this.databaseHourlyStockQuoteListSecondItemExpected =
                 new StockQuote(
@@ -113,13 +110,8 @@ public class DatabaseStockServiceTest {
     }
 
     @After
-    public void tearDown() throws DatabaseConnectionException, SQLException {
-
-        Connection connection = DatabaseUtility.getConnection();
-
-        connection.createStatement().executeUpdate("DELETE FROM quotes WHERE symbol = '" + this.stockSymbol + "';");
-
-        connection.close();
+    public void tearDown() throws Exception {
+        DatabaseUtility.initializeDatabase(DatabaseUtility.initializationFile);
     }
 
     @Test
@@ -143,7 +135,7 @@ public class DatabaseStockServiceTest {
     }
 
     @Test
-    public void testGetHourlyStockQuotePositive() {
+    public void testGetHourlyStockQuotesPositive() {
         assertEquals("stock quote obtained equals stock quote expected", this.databaseHourlyStockQuoteList.get(0), this.databaseHourlyStockQuoteListFirstItemExpected);
         assertEquals("second stock quote obtained equals stock quote expected", this.databaseHourlyStockQuoteList.get(1), this.databaseHourlyStockQuoteListSecondItemExpected);
         assertEquals("last stock quote obtained equals stock quote expected", this.databaseHourlyStockQuoteList.get(6), this.databaseHourlyStockQuoteListLastItemExpected);
