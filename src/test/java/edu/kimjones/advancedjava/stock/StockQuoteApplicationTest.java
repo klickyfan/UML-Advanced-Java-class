@@ -12,7 +12,7 @@ import java.io.IOException;
 public class StockQuoteApplicationTest {
 
     @Test
-    public void testMainPositive() {
+    public void testMainPositive() throws IOException {
 
         java.lang.String[] args = new java.lang.String[3];
 
@@ -20,21 +20,12 @@ public class StockQuoteApplicationTest {
         args[1] = "9/20/2018";
         args[2] = "9/23/2018";
 
-        try {
-            StockQuoteApplication.main(args);
-        }
-        catch(IOException e) {
-        }
+        StockQuoteApplication.main(args);
     }
 
     @Test(expected = NullPointerException.class)
-    public void testMainNegative() {
+    public void testMainNegative() throws IOException {
 
-        try {
-            StockQuoteApplication.main(null);
-        }
-        catch(IOException e) {
-        }
+        StockQuoteApplication.main(null);
     }
-
 }

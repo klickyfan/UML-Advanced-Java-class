@@ -1,4 +1,4 @@
-package edu.kimjones.advancedjava.stock;
+package edu.kimjones.advancedjava.stock.utilities;
 
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;

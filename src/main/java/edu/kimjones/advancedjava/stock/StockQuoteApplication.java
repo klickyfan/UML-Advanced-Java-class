@@ -1,5 +1,10 @@
 package edu.kimjones.advancedjava.stock;
 
+import edu.kimjones.advancedjava.stock.model.StockQuote;
+import edu.kimjones.advancedjava.stock.services.StockService;
+import edu.kimjones.advancedjava.stock.services.StockServiceException;
+import edu.kimjones.advancedjava.stock.services.StockServiceFactory;
+import edu.kimjones.advancedjava.stock.utilities.DateOptionHandler;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
@@ -50,14 +55,13 @@ public class StockQuoteApplication {
 
     private void doMain(String args[]) throws IOException {
 
-        //registerHandler(Date.class, DateOptionHandler.class);
+        System.out.println("Working Directory = " + System.getProperty("user.dir"));
 
         CmdLineParser parser = new CmdLineParser(this);
 
         try {
             parser.parseArgument(args);
-        }
-        catch (CmdLineException e) {
+        } catch (CmdLineException e) {
 
             System.err.println(e.getMessage());
             parser.printUsage(System.err);
@@ -76,38 +80,62 @@ public class StockQuoteApplication {
         System.out.printf("Until date: %tD %n", untilDate);
         System.out.printf("Interval: %s %n", interval.toString());
 
-        System.out.printf("%n***** %n");
-
-        StockService stockService = StockServiceFactory.createStockService();
-
-        /**
-         * get a single price quote
-         */
-        StockQuote quote = stockService.getStockQuote(symbol);
-
-        System.out.printf("%nThe current price of stock %s is %.2f %n", symbol, quote.getStockPrice());
-
         System.out.printf("%n***** %n%n");
 
-        /**
-         * get a list of price quotes for each day from calFromDate to calUntilDate
-         */
-        List<StockQuote> dailyQuoteList = stockService.getStockQuote(symbol, calFromDate, calUntilDate);
+        try {
 
-        for (StockQuote temp : dailyQuoteList) {
-            System.out.printf("The price of stock %s on date %tD is %.2f %n", temp.getStockSymbol(), temp.getDateRecorded(), temp.getStockPrice());
+            StockService stockService = StockServiceFactory.createStockService();
+
+            /**
+             * get the latest price quote for a stock
+             */
+            StockQuote latestQuote = stockService.getLatestStockQuote(symbol);
+
+            System.out.printf("%nThe latest price of stock %s is %.2f %n", symbol, latestQuote.getStockPrice());
+
+            System.out.printf("%n***** %n%n");
+
+            /**
+             * get the a price quote for a stock on a particular date
+             */
+
+            StockQuote quoteOnDate = stockService.getStockQuote(symbol, fromDate);
+
+            System.out.printf("%nThe price of stock %s on date %tD is %.2f %n", symbol, quoteOnDate.getDateRecorded(), quoteOnDate.getStockPrice());
+
+            System.out.printf("%n***** %n%n");
+
+            /**
+             * get a list of price quotes for each day from calFromDate to calUntilDate
+             */
+
+            List<StockQuote> dailyQuoteList = stockService.getStockQuoteList(symbol, calFromDate, calUntilDate);
+
+            System.out.printf("%n");
+
+            for (StockQuote temp : dailyQuoteList) {
+                System.out.printf("The price of stock %s on date %tD is %.2f %n", temp.getStockSymbol(), temp.getDateRecorded(), temp.getStockPrice());
+            }
+
+            System.out.printf("%n***** %n%n");
+
+            /**
+             * get a list of price quotes for each day from calFromDate to calUntilDate on interval
+             */
+
+            StockService.StockQuoteInterval interval = StockService.StockQuoteInterval.HOURLY;
+            List<StockQuote> hourlyQuoteList = stockService.getStockQuoteList(symbol, calFromDate, calUntilDate, interval);
+
+            System.out.printf("%n");
+
+            for (StockQuote temp : hourlyQuoteList) {
+                System.out.printf("The price of stock %s at time %tD %tR is %.2f %n", temp.getStockSymbol(), temp.getDateRecorded(), temp.getDateRecorded(), temp.getStockPrice());
+            }
+
+        }
+        catch (StockServiceException exception) {
+            System.out.printf("An exception was caught: " + exception.getMessage());
         }
 
-        System.out.printf("%n***** %n%n");
-
-        StockService.StockQuoteInterval interval = StockService.StockQuoteInterval.EVERY_SIX_HOURS;
-        /**
-         * get a list of price quotes for each day from calFromDate to calUntilDate on interval
-         */
-        List<StockQuote> hourlyQuoteList = stockService.getStockQuote(symbol, calFromDate, calUntilDate, interval);
-
-        for (StockQuote temp : hourlyQuoteList) {
-            System.out.printf("The price of stock %s at time %tD %tR is %.2f %n", temp.getStockSymbol(), temp.getDateRecorded(), temp.getDateRecorded(), temp.getStockPrice());
-        }
     }
 }

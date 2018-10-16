@@ -1,4 +1,4 @@
-package edu.kimjones.advancedjava.stock;
+package edu.kimjones.advancedjava.stock.services;
 
 /**
  * This class implements the factory pattern, and produces an instance of a class that implements the
@@ -21,12 +21,12 @@ public class StockServiceFactory {
     public static final StockService createStockService() throws StockServiceException {
 
         try {
-            return new BasicStockService(); // replace as needed with any stock service
+            return new DatabaseStockService(); // replace as needed with any stock service
         }
         catch (Exception e)
         {
             System.err.println(e.getMessage());
-            throw new StockServiceException();
+            throw new StockServiceException("Unable to produce an instance of a class that implements the StockService interface.");
         }
     }
 }

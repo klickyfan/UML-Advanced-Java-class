@@ -1,4 +1,4 @@
-package edu.kimjones.advancedjava.stock;
+package edu.kimjones.advancedjava.stock.model;
 
 import nl.jqno.equalsverifier.EqualsVerifier;
 import org.junit.Before;

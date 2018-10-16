@@ -1,4 +1,4 @@
-package edu.kimjones.advancedjava.stock;
+package edu.kimjones.advancedjava.stock.utilities;
 
 import junitparams.JUnitParamsRunner;
 import junitparams.Parameters;
@@ -13,12 +13,10 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-//import static org.hamcrest.Matcher.*;
 import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.core.AllOf.allOf;
 import static org.hamcrest.core.StringContains.containsString;
 import static org.junit.Assert.assertThat;
-import static org.hamcrest.core.AllOf.allOf;
-
 
 /**
  * This class is for testing the DateOptionHandler class.
@@ -49,21 +47,16 @@ public class DateOptionHandlerTest {
 
     @SuppressWarnings("unused")
     private Object[] notParsableOptions() {
-        return new Object[][] {
-                {new String[] {"-d", "not a date"}, allOf(containsString("not a date"))}
-         /*       ,
-                {new String[] {"--duration=1h"}, allOf(containsString("--duration"), containsString("1/1/1"))},*/
+        return new Object[][]{
+                {new String[]{"-d", "not a date"}, allOf(containsString("not a date"))}
         };
     }
 
     @Test
     @Parameters(method = "parsableOptions")
     public void testDateOptionHandlerPositive(String[] args, Date expected) throws CmdLineException {
-
         new CmdLineParser(option).parseArgument(args);
-
         assertThat(option.date, equalTo(expected));
-
     }
 
     @Test
