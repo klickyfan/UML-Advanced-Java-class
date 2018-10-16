@@ -2,8 +2,9 @@ package edu.kimjones.advancedjava.stock.services;
 
 import edu.kimjones.advancedjava.stock.model.StockQuote;
 import edu.kimjones.advancedjava.stock.utilities.DatabaseUtility;
-import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.math.BigDecimal;
@@ -46,11 +47,21 @@ public class DatabaseStockServiceTest {
     private List<StockQuote> databaseDailyStockQuoteList;
     private List<StockQuote> databaseDailyStockQuoteListExpected = new ArrayList<StockQuote>();
 
-    @Before
-    public void setUp() throws Exception {
+    @BeforeClass
+    public static void setUpClass() throws Exception {
 
         DatabaseUtility.initializeDatabase(DatabaseUtility.initializationFile);
         DatabaseUtility.initializeDatabase("./src/main/sql/add_stock_service_test_data.sql");
+    }
+
+    @AfterClass
+    public static void tearDownClass() throws Exception {
+
+        DatabaseUtility.initializeDatabase(DatabaseUtility.initializationFile);
+    }
+
+    @Before
+    public void setUp() throws Exception {
 
         this.databaseStockService = new DatabaseStockService();
 
@@ -107,11 +118,6 @@ public class DatabaseStockServiceTest {
                         new BigDecimal(83.91).setScale(2, RoundingMode.HALF_UP),
                         dateFormat.parse("2018-10-03 00:00")));
 
-    }
-
-    @After
-    public void tearDown() throws Exception {
-        DatabaseUtility.initializeDatabase(DatabaseUtility.initializationFile);
     }
 
     @Test

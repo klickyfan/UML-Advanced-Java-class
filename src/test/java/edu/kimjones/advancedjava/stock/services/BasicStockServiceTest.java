@@ -1,7 +1,6 @@
 package edu.kimjones.advancedjava.stock.services;
 
 import edu.kimjones.advancedjava.stock.model.StockQuote;
-
 import org.junit.Before;
 import org.junit.Test;
 
@@ -13,7 +12,6 @@ import java.util.List;
 
 import static edu.kimjones.advancedjava.stock.utilities.TestUtility.addHoursToDate;
 import static edu.kimjones.advancedjava.stock.utilities.TestUtility.parseDateString;
-
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.*;
