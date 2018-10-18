@@ -62,6 +62,7 @@ public class DatabasePersonService implements PersonService {
      */
     @Override
     public void addOrUpdatePerson(Person person) throws PersonServiceException {
+
         Session session = DatabaseUtility.getSessionFactory().openSession();
         Transaction transaction = null;
         try {
@@ -89,6 +90,7 @@ public class DatabasePersonService implements PersonService {
     @Override
     @SuppressWarnings("unchecked") // used to suppress warnings from criteria.list
     public List<String> getStocks(Person person) throws PersonServiceException {
+
         Session session =  DatabaseUtility.getSessionFactory().openSession();
         Transaction transaction = null;
         List<String> stocks = new ArrayList<>();
@@ -124,6 +126,7 @@ public class DatabasePersonService implements PersonService {
      */
     @Override
     public void addStockToPerson(String stockSymbol, Person person) throws PersonServiceException {
+
         Session session =  DatabaseUtility.getSessionFactory().openSession();
         Transaction transaction = null;
         try {

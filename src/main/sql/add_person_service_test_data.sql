@@ -1,4 +1,4 @@
-# This file is used by DatabasePersonServiceTest to test the DatabasePersonService class.
+# This file is used by DatabaseStockServiceTest to test the DatabaseStockService class.
 
 USE stocks;
 
