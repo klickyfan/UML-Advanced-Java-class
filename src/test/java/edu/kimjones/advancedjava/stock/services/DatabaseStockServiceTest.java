@@ -2,6 +2,7 @@ package edu.kimjones.advancedjava.stock.services;
 
 import edu.kimjones.advancedjava.stock.model.StockQuote;
 import edu.kimjones.advancedjava.stock.utilities.DatabaseUtility;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -25,18 +26,18 @@ import static org.junit.Assert.*;
  */
 public class DatabaseStockServiceTest {
 
+    private StockService stockService;
+
     private String stockSymbol = "OOOO"; // this is an untaken stock symbol
 
     private Date stockDate;
 
+    private StockQuote databaseQuoteNow;
+    private StockQuote databaseQuoteOnDate;
+
     private BigDecimal latestStockPriceExpected = BigDecimal.valueOf(84.61).setScale(2, RoundingMode.HALF_UP);
     private BigDecimal stockPriceExpected = BigDecimal.valueOf(118.55).setScale(2, RoundingMode.HALF_UP);
     private BigDecimal stockPriceNotExpected = BigDecimal.valueOf(1.0).setScale(2, RoundingMode.HALF_UP);
-
-    private DatabaseStockService databaseStockService;
-
-    private StockQuote databaseQuoteNow;
-    private StockQuote databaseQuoteOnDate;
 
     private List<StockQuote> databaseHourlyStockQuoteList;
     private StockQuote databaseHourlyStockQuoteListFirstItemExpected;
@@ -52,7 +53,7 @@ public class DatabaseStockServiceTest {
         DatabaseUtility.initializeDatabase(DatabaseUtility.initializationFile);
         DatabaseUtility.initializeDatabase("./src/main/sql/add_stock_service_test_data.sql");
 
-        this.databaseStockService = new DatabaseStockService();
+        this.stockService = ServiceFactory.getStockService();
 
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         this.stockDate = dateFormat.parse("2018-09-21 00:00");
@@ -60,15 +61,15 @@ public class DatabaseStockServiceTest {
         /**
          * prepare to test versions of getStockQuote that return a single quote
          */
-        this.databaseQuoteNow = databaseStockService.getLatestStockQuote(this.stockSymbol);
+        this.databaseQuoteNow = stockService.getLatestStockQuote(this.stockSymbol);
 
-        this.databaseQuoteOnDate = databaseStockService.getStockQuote(this.stockSymbol, this.stockDate);
+        this.databaseQuoteOnDate = stockService.getStockQuote(this.stockSymbol, this.stockDate);
 
         /**
          * prepare to test getStockQuoteList on hour interval
          */
         this.databaseHourlyStockQuoteList =
-                databaseStockService.getStockQuoteList(this.stockSymbol, parseDateString("9/20/2018"), parseDateString("9/21/2018"), StockService.StockQuoteInterval.HOURLY);
+                stockService.getStockQuoteList(this.stockSymbol, parseDateString("9/20/2018"), parseDateString("9/21/2018"), StockService.StockQuoteInterval.HOURLY);
 
         this.databaseHourlyStockQuoteListFirstItemExpected =
                 new StockQuote(
@@ -89,7 +90,7 @@ public class DatabaseStockServiceTest {
         /**
          * prepare to test getStockQuoteList on daily interval
          */
-        this.databaseDailyStockQuoteList = databaseStockService.getStockQuoteList(this.stockSymbol, parseDateString("10/1/2018"), parseDateString("10/3/2018"), StockService.StockQuoteInterval.DAILY);
+        this.databaseDailyStockQuoteList = stockService.getStockQuoteList(this.stockSymbol, parseDateString("10/1/2018"), parseDateString("10/3/2018"), StockService.StockQuoteInterval.DAILY);
 
         this.databaseDailyStockQuoteListExpected.add(
                 new StockQuote(
@@ -111,7 +112,6 @@ public class DatabaseStockServiceTest {
 
     @After
     public void tearDown() throws Exception {
-
         DatabaseUtility.initializeDatabase(DatabaseUtility.initializationFile);
     }
 
