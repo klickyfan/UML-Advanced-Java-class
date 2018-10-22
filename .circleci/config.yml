@@ -7,7 +7,7 @@ jobs:
   build:
     docker:
     - image: circleci/openjdk:8-jdk
-    - image: circleci/mysql:latest
+    - image: circleci/mysql:latest 
       environment:
       - MYSQL_ROOT_PASSWORD: r00tp@ssw0rd
       - MYSQL_DATABASE: stocks
