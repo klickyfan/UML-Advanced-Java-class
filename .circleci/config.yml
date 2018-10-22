@@ -5,10 +5,8 @@
 version: 2
 jobs:
   build:
-    docker:
-    
+    docker: 
     - image: circleci/openjdk:8-jdk
-    
     - image: circleci/mysql:latest-ram
       environment:
       - MYSQL_ROOT_PASSWORD: r00tp@ssw0rd
