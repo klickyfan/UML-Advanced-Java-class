@@ -1,13 +1,13 @@
 # Java Maven CircleCI 2.0 configuration file
 #
-# Check https://circleci.com/docs/2.0/language-java for more details
+# Check https://circleci.com/docs/2.0/language-java for more details on this
 #
 version: 2
 jobs:
   build:
     docker:
     - image: circleci/openjdk:8-jdk
-    - image: circleci/mysql: 5.7
+    - image: circleci/mysql:5.7
       environment:
       - MYSQL_ROOT_PASSWORD: r00tp@ssw0rd
       - MYSQL_DATABASE: stocks
