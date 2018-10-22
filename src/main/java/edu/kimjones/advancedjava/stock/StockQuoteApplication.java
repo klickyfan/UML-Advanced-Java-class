@@ -1,6 +1,6 @@
 package edu.kimjones.advancedjava.stock;
 
-import edu.kimjones.advancedjava.stock.model.StockQuote;
+import edu.kimjones.advancedjava.stock.model.DAOStockQuote;
 import edu.kimjones.advancedjava.stock.services.ServiceFactory;
 import edu.kimjones.advancedjava.stock.services.StockService;
 import edu.kimjones.advancedjava.stock.services.StockServiceException;
@@ -12,7 +12,6 @@ import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
 import org.kohsuke.args4j.spi.StringArrayOptionHandler;
 
-import java.io.IOException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -23,6 +22,8 @@ import java.util.List;
  * @author Kim Jones
  */
 public class StockQuoteApplication {
+
+    private static final int MIN_ARGUMENTS = 6;
 
     @Option(name = "-symbol",
             required = true,
@@ -43,7 +44,6 @@ public class StockQuoteApplication {
     private Date untilDate;
 
     @Option(name = "-interval",
-            required = false,
             usage = "the interval on which you want prices (i.e. DAILY)")
     private StockService.StockQuoteInterval interval = StockService.StockQuoteInterval.DAILY;
 
@@ -54,12 +54,7 @@ public class StockQuoteApplication {
      * @param args 3 options are required: one containing a stock symbol, and two containing dates of the form
      *             "mm/dd/yyyy"
      */
-    public static void main(String[] args) throws IOException, DatabaseInitializationException {
-
-        // prepare database
-        DatabaseUtility.initializeDatabase(DatabaseUtility.initializationFile);
-        DatabaseUtility.initializeDatabase("./src/main/sql/add_AAPL_interday_stock_data.sql");
-        DatabaseUtility.initializeDatabase("./src/main/sql/add_AAPL_intraday_stock_data.sql");
+    public static void main(String[] args) throws DatabaseInitializationException {
 
         new StockQuoteApplication().doMain(args);
 
@@ -67,58 +62,21 @@ public class StockQuoteApplication {
         DatabaseUtility.initializeDatabase(DatabaseUtility.initializationFile);
     }
 
-    private void doMain(String args[]) throws IOException {
+    private void doMain(String args[]) {
 
-        System.out.println("Working Directory = " + System.getProperty("user.dir"));
-
-        parseArguments(args);
-
-        try {
-
-            StockService stockService = ServiceFactory.getStockService();
-
-            /**
-             * get the latest price quote for a stock
-             */
-            getLatestStockQuote(stockService);
-
-            System.out.printf("%n***** %n%n");
-
-            /**
-             * get the a price quote for a stock on a particular date
-             */
-            getDatedStockQuote(stockService);
-
-            System.out.printf("%n***** %n%n");
-
-            /**
-             * get a list of price quotes for each day from calFromDate to calUntilDate
-             */
-            getStockQuoteList(stockService);
-
-            System.out.printf("%n***** %n%n");
-
-            /**
-             * get a list of price quotes for each day from calFromDate to calUntilDate on interval
-             */
-            getStockQuoteListOnInterval(stockService);
-
-        } catch (StockServiceException exception) {
-            System.out.printf("An exception was caught: " + exception.getMessage());
-        }
-
-    }
-
-    private void parseArguments(String args[]) throws IOException {
         CmdLineParser parser = new CmdLineParser(this);
+
+        if (args == null || args.length < MIN_ARGUMENTS) {
+            System.err.println("Insufficient options were supplied. %nUsage: ");
+            parser.printUsage(System.err);
+            return;
+        }
 
         try {
             parser.parseArgument(args);
         } catch (CmdLineException e) {
-
-            System.err.println(e.getMessage());
+            System.err.println(e.getMessage() + "%nUsage: ");
             parser.printUsage(System.err);
-
             return;
         }
 
@@ -134,37 +92,79 @@ public class StockQuoteApplication {
         System.out.printf("Interval: %s %n", interval.toString());
 
         System.out.printf("%n***** %n%n");
+
+        try {
+
+            initializeDatabase();
+
+            StockService stockService = ServiceFactory.getStockService();
+
+            /*
+              get the latest price quote for a stock
+             */
+            getLatestStockQuote(stockService);
+
+            System.out.printf("%n***** %n%n");
+
+            /*
+              get the a price quote for a stock on a particular date
+             */
+            getDatedStockQuote(stockService);
+
+            System.out.printf("%n***** %n%n");
+
+            /*
+              get a list of price quotes for each day from calFromDate to calUntilDate
+             */
+            getStockQuoteList(stockService);
+
+            System.out.printf("%n***** %n%n");
+
+            /*
+              get a list of price quotes for each day from calFromDate to calUntilDate on interval
+             */
+            getStockQuoteListOnInterval(stockService);
+
+        } catch (DatabaseInitializationException | StockServiceException exception) {
+            System.out.print(exception.getMessage());
+        }
+    }
+
+    private void initializeDatabase() throws DatabaseInitializationException {
+        DatabaseUtility.initializeDatabase(DatabaseUtility.initializationFile);
+        DatabaseUtility.initializeDatabase("./src/main/sql/add_AAPL_interday_stock_data.sql");
+        DatabaseUtility.initializeDatabase("./src/main/sql/add_AAPL_intraday_stock_data.sql");
     }
 
     private void getLatestStockQuote(StockService stockService) throws StockServiceException {
-        StockQuote latestQuote = stockService.getLatestStockQuote(symbol);
+        DAOStockQuote latestQuote = stockService.getLatestStockQuote(symbol);
 
         System.out.printf("%nThe latest price of stock %s is %.2f %n", symbol, latestQuote.getStockPrice());
     }
 
     private void getDatedStockQuote(StockService stockService) throws StockServiceException {
-        StockQuote quoteOnDate = stockService.getStockQuote(symbol, fromDate);
+        DAOStockQuote quoteOnDate = stockService.getStockQuote(symbol, fromDate);
 
         System.out.printf("%nThe price of stock %s on date %tD is %.2f %n", symbol, quoteOnDate.getDateRecorded(), quoteOnDate.getStockPrice());
     }
 
     private void getStockQuoteList(StockService stockService) throws StockServiceException {
-        List<StockQuote> dailyQuoteList = stockService.getStockQuoteList(symbol, calFromDate, calUntilDate);
+        List<DAOStockQuote> dailyQuoteList = stockService.getStockQuoteList(symbol, calFromDate, calUntilDate);
 
         System.out.printf("%n");
 
-        for (StockQuote temp : dailyQuoteList) {
+        for (DAOStockQuote temp : dailyQuoteList) {
             System.out.printf("The price of stock %s on date %tD is %.2f %n", temp.getStockSymbol(), temp.getDateRecorded(), temp.getStockPrice());
         }
     }
 
     private void getStockQuoteListOnInterval(StockService stockService) throws StockServiceException {
         StockService.StockQuoteInterval interval = StockService.StockQuoteInterval.HOURLY;
-        List<StockQuote> hourlyQuoteList = stockService.getStockQuoteList(symbol, calFromDate, calUntilDate, interval);
+        List<DAOStockQuote> hourlyQuoteList = stockService.getStockQuoteList(symbol, calFromDate, calUntilDate, interval);
 
         System.out.printf("%n");
 
-        for (StockQuote temp : hourlyQuoteList) {
+        for (DAOStockQuote temp : hourlyQuoteList) {
             System.out.printf("The price of stock %s at time %tD %tR is %.2f %n", temp.getStockSymbol(), temp.getDateRecorded(), temp.getDateRecorded(), temp.getStockPrice());
         }
     }

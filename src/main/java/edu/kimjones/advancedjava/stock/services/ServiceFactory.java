@@ -23,8 +23,7 @@ public class ServiceFactory {
         try {
             return new DatabaseStockService(); // replace as needed with any stock service
         }
-        catch (Exception e)
-        {
+        catch (Exception e) {
             System.err.println(e.getMessage());
             throw new StockServiceException("Unable to produce an instance of a class that implements the StockService interface.");
         }
@@ -39,8 +38,7 @@ public class ServiceFactory {
         try {
             return new DatabasePersonService(); // replace as needed with any person service
         }
-        catch (Exception e)
-        {
+        catch (Exception e) {
             System.err.println(e.getMessage());
             throw new PersonServiceException("Unable to produce an instance of a class that implements the PersonService interface.");
         }

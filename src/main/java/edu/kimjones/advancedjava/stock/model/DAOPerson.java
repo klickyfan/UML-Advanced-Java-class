@@ -5,6 +5,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+
 import java.sql.Timestamp;
 
 /**
@@ -14,7 +15,7 @@ import java.sql.Timestamp;
  */
 @Entity
 @Table(name="person")
-final public class Person {
+final public class DAOPerson implements DatabaseAccessObject {
 
     private int id;
     private String firstName;
@@ -22,19 +23,26 @@ final public class Person {
     private Timestamp birthDate;
 
     /**
+     * Creates a {@code DAOPerson} instance that needs to be initialized.
+     */
+    public DAOPerson() {
+        // this empty constructor is required by hibernate framework
+    }
+
+    /**
      * @return a unique id representing a particular row in the person table
      */
     @Id
-    @Column(name = "id", nullable = false, insertable = true, updatable = true)
+    @Column(name = "id", nullable = false)
     public int getId() {
         return id;
     }
 
     /**
-     * This method sets the unique id for a particular row in the person table. It should not be called by client
-     * code as the value is managed internally.
+     * Sets the unique id for a particular row in the person table. Should not be called by client code as the value is
+     * managed internally.
      *
-     * @param id a unique value
+     * @param id a unique int value
      */
     public void setId(int id) {
         this.id = id;
@@ -44,13 +52,14 @@ final public class Person {
      * @return the person's first name
      */
     @Basic
-    @Column(name = "first_name", nullable = false, insertable = true, updatable = true, length = 256)
+    @Column(name = "first_name", nullable = false, length = 256)
     public String getFirstName() {
         return firstName;
     }
 
     /**
-     * This method sets the person's first name.
+     * Sets the person's first name.
+     *
      * @param firstName a String value
      */
     public void setFirstName(String firstName) {
@@ -61,13 +70,14 @@ final public class Person {
      * @return the person's last name
      */
     @Basic
-    @Column(name = "last_name", nullable = false, insertable = true, updatable = true, length = 256)
+    @Column(name = "last_name", nullable = false, length = 256)
     public String getLastName() {
         return lastName;
     }
 
     /**
-     * This method sets the person's last name.
+     * Sets the person's last name.
+     *
      * @param lastName a String value
      */
     public void setLastName(String lastName) {
@@ -75,41 +85,47 @@ final public class Person {
     }
 
     /**
-     * @return the person's birthdate
+     * @return the person's date of birth
      */
     @Basic
-    @Column(name = "birth_date", nullable = false, insertable = true, updatable = true)
+    @Column(name = "birth_date", nullable = false)
     public Timestamp getBirthDate() {
         return birthDate;
     }
 
     /**
-     * This method sets the person's date of birth.
-     * @param birthDate  the time the person was born
+     * Sets the person's date of birth.
+     *
+     * @param birthDate a Timestamp value
      */
     public void setBirthDate(Timestamp birthDate) {
         this.birthDate = birthDate;
     }
 
+    /**
+     * @param obj   a {@code DAOPerson} instance
+     * @return      true if two @code DAOPerson} instances are equal
+     */
     @Override
     public boolean equals(Object obj) {
         if (obj == this) return true;
 
-        if (obj == null || !(obj instanceof Person)) return false;
+        if (!(obj instanceof DAOPerson)) return false;
 
-        Person rhs = (Person) obj;
+        DAOPerson rhs = (DAOPerson) obj;
 
         if (id != rhs.id) return false;
+
         if (birthDate != null ? !birthDate.equals(rhs.birthDate) : rhs.birthDate != null)
             return false;
         if (firstName != null ? !firstName.equals(rhs.firstName) : rhs.firstName != null)
             return false;
-        if (lastName != null ? !lastName.equals(rhs.lastName) : rhs.lastName != null)
-            return false;
-
-        return true;
+        return lastName != null ? lastName.equals(rhs.lastName) : rhs.lastName == null;
     }
 
+    /**
+     * @return an integer which uniquely identifies a {@code DAOPerson} instance
+     */
     @Override
     public int hashCode() {
         int result = id;
@@ -121,7 +137,7 @@ final public class Person {
 
     @Override
     public String toString() {
-        return "Person{" +
+        return "DAOPerson{" +
                 "id=" + id +
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +

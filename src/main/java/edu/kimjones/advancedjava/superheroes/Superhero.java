@@ -1,4 +1,4 @@
-package edu.kimjones.advancedjava;
+package edu.kimjones.advancedjava.superheroes;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -96,7 +96,7 @@ public class Superhero {
     }
 
     /**
-     * cause this superherro to attack
+     * cause this superhero to attack
      *
      * @param enemyName     the name of the enemy the superhero should attack
      */

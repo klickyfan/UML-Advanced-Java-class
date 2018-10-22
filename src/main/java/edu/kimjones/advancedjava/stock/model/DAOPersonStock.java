@@ -1,6 +1,12 @@
 package edu.kimjones.advancedjava.stock.model;
 
-import javax.persistence.*;
+import javax.persistence.Basic;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 
 /**
  * This class models a database table that links a person with the stocks they are interested in.
@@ -8,26 +14,26 @@ import javax.persistence.*;
  * @author Kim Jones (using code obtained from Spencer Marks)
  */
 @Entity
-@Table(name = "person_stock", catalog = "")
-final public class PersonStock {
+@Table(name = "person_stock")
+final public class DAOPersonStock implements DatabaseAccessObject {
     private int id;
-    private Person person;
+    private DAOPerson person;
     private String stockSymbol;
 
     /**
-     * This constructor creates a {@code PersonStock} instance that needs to be initialized.
+     * Creates a {@code DAOPersonStock} instance that needs to be initialized.
      */
-    public PersonStock() {
+    public DAOPersonStock() {
         // this empty constructor is required by hibernate framework
     }
 
     /**
-     * This constructor creates a {@code PersonStock} instance.
+     * Creates a {@code DAOPersonStock} instance.
      *
      * @param person a person
      * @param stockSymbol the symbol of the stock to associate the person with
      */
-    public PersonStock(Person person, String stockSymbol) {
+    public DAOPersonStock(DAOPerson person, String stockSymbol) {
         setPerson(person);
         setStockSymbol(stockSymbol);
     }
@@ -36,14 +42,14 @@ final public class PersonStock {
      * @return a unique id representing a particular row in the person_stock table
      */
     @Id
-    @Column(name = "id", nullable = false, insertable = true, updatable = true)
+    @Column(name = "id", nullable = false)
     public int getId() {
         return id;
     }
 
     /**
-     * This method sets the unique id for a particular row in the person_stock table. It should not be called by client
-     * code as the value is managed internally.
+     * Sets the unique id for a particular row in the person_stock table. Should not be called by client code as the
+     * value is managed internally.
      *
      * @param id a unique value
      */
@@ -52,54 +58,61 @@ final public class PersonStock {
     }
 
     /**
-     * @return a {@code Person} instance for the person referenced by a particular row of the person_stock table
+     * @return a {@code DAOPerson} instance for the person associated with the {@code PersonStock}
      */
     @ManyToOne
     @JoinColumn(name = "person_id", referencedColumnName = "id", nullable = false)
-    public Person getPerson() {
+    public DAOPerson getPerson() {
         return person;
     }
 
     /**
-     * This method sets the Person for a particular row in the person_stock table.
+     * Sets the {@code PersonStock}'s person.
      *
-     * @param person an {@code Person} instance
+     * @param person an {@code DAOPerson} instance
      */
-    public void setPerson(Person person) {
+    public void setPerson(DAOPerson person) {
         this.person = person;
     }
 
     /**
-     *
      * @return a stock symbol associated with the person referenced by a particular row of the person_stock table
      */
     @Basic
-    @Column(name = "stock_symbol", nullable = false, insertable = true, updatable = true, length = 256)
-    public String getStockSymbol() { return stockSymbol; }
+    @Column(name = "stock_symbol", nullable = false, length = 256)
+    public String getStockSymbol() {
+        return stockSymbol;
+    }
 
     /**
-     * This method sets the stock symbol for a particular row in the person_stock table.
+     * Sets the {@code PersonStock}'s stock symbol.
      *
      * @param stockSymbol a stock symbol
      */
-    public void setStockSymbol(String stockSymbol) { this.stockSymbol = stockSymbol; }
+    public void setStockSymbol(String stockSymbol) {
+        this.stockSymbol = stockSymbol;
+    }
 
+    /**
+     * @param obj   a {@code DAOPersonStock} instance
+     * @return      true if two @code DAOPersonStock} instances are equal
+     */
     @Override
     public boolean equals(Object obj) {
         if (obj == this) return true;
 
-        if (obj == null || !(obj instanceof PersonStock)) return false;
+        if (!(obj instanceof DAOPersonStock)) return false;
 
-        PersonStock rhs = (PersonStock) obj;
+        DAOPersonStock rhs = (DAOPersonStock) obj;
 
         if (id != rhs.id) return false;
         if (person != null ? !person.equals(rhs.person) : rhs.person != null) return false;
-        if (stockSymbol != null ? !stockSymbol.equals(rhs.stockSymbol) : rhs.stockSymbol != null)
-            return false;
-
-        return true;
+        return stockSymbol != null ? stockSymbol.equals(rhs.stockSymbol) : rhs.stockSymbol == null;
     }
 
+    /**
+     * @return an integer which uniquely identifies a {@code DAOPersonStock} instance
+     */
     @Override
     public int hashCode() {
         int result = id;
@@ -111,7 +124,7 @@ final public class PersonStock {
 
     @Override
     public String toString() {
-        return "PersonStock{" +
+        return "DAOPersonStock{" +
                 "id=" + id +
                 ", person=" + person +
                 ", symbol='" + stockSymbol + '\'' +

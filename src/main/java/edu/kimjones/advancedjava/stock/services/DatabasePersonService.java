@@ -1,8 +1,9 @@
 package edu.kimjones.advancedjava.stock.services;
 
-import edu.kimjones.advancedjava.stock.model.Person;
-import edu.kimjones.advancedjava.stock.model.PersonStock;
+import edu.kimjones.advancedjava.stock.model.DAOPerson;
+import edu.kimjones.advancedjava.stock.model.DAOPersonStock;
 import edu.kimjones.advancedjava.stock.utilities.DatabaseUtility;
+
 import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
@@ -12,7 +13,6 @@ import org.hibernate.criterion.Restrictions;
 import java.util.ArrayList;
 import java.util.List;
 
-
 /**
  * This class models a person service that gets data from a database.
  *
@@ -21,28 +21,28 @@ import java.util.List;
 public class DatabasePersonService implements PersonService {
 
     /**
-     * This method gets a list of people managed by the service.
+     * Gets a list of people managed by the service.
      *
-     * @return                          a list of {@code Person} instances
+     * @return                          a list of {@code DAOPerson} instances
      * @throws PersonServiceException   if a service can not read or write the requested data or otherwise perform the
      *                                  requested operation
      */
     @Override
     @SuppressWarnings("unchecked") // used to suppress warnings from criteria.list
-    public List<Person> getPersonList() throws PersonServiceException {
+    public List<DAOPerson> getPersonList() throws PersonServiceException {
 
         Session session = DatabaseUtility.getSessionFactory().openSession();
-        List<Person> returnValue;
+        List<DAOPerson> returnValue;
         Transaction transaction = null;
         try {
             transaction = session.beginTransaction();
-            Criteria criteria = session.createCriteria(Person.class);
+            Criteria criteria = session.createCriteria(DAOPerson.class);
             returnValue = criteria.list();
         } catch (HibernateException e) {
             if (transaction != null && transaction.isActive()) {
                 transaction.rollback();  // close transaction
             }
-            throw new PersonServiceException("Could not get Person data: " + e.getMessage(), e);
+            throw new PersonServiceException("Could not get DAOPerson data. " + e.getMessage(), e);
         } finally {
             if (transaction != null && transaction.isActive()) {
                 transaction.commit();
@@ -53,15 +53,15 @@ public class DatabasePersonService implements PersonService {
     }
 
     /**
-     * This method adds a new person to the list of people already managed by the service, or or updates an person
-     * already in that list.
+     * Adds a new person to the list of people already managed by the service, or or updates an person already in that
+     * list.
      *
-     * @param person                    a {@code Person} instance
+     * @param person                    a {@code DAOPerson} instance
      * @throws PersonServiceException   if a service can not read or write the requested data or otherwise perform the
      *                                  requested operation
      */
     @Override
-    public void addOrUpdatePerson(Person person) throws PersonServiceException {
+    public void addOrUpdatePerson(DAOPerson person) throws PersonServiceException {
 
         Session session = DatabaseUtility.getSessionFactory().openSession();
         Transaction transaction = null;
@@ -73,6 +73,7 @@ public class DatabasePersonService implements PersonService {
             if (transaction != null && transaction.isActive()) {
                 transaction.rollback();  // close transaction
             }
+            throw new PersonServiceException("Could not add or update DAOPerson. " + e.getMessage(), e);
         } finally {
             if (transaction != null && transaction.isActive()) {
                 transaction.commit();
@@ -81,26 +82,27 @@ public class DatabasePersonService implements PersonService {
     }
 
     /**
-     * This method returns a list of all the stocks the given person is interested in.
+     * Returns a list of all the stocks the given person is interested in.
      *
+     * @param person                    a {@code DAOPerson}
      * @return                          a list of stock symbols
      * @throws PersonServiceException   if a service can not read or write the requested data or otherwise perform the
      *                                  requested operation
      */
     @Override
     @SuppressWarnings("unchecked") // used to suppress warnings from criteria.list
-    public List<String> getStocks(Person person) throws PersonServiceException {
+    public List<String> getStocks(DAOPerson person) throws PersonServiceException {
 
         Session session =  DatabaseUtility.getSessionFactory().openSession();
         Transaction transaction = null;
         List<String> stocks = new ArrayList<>();
         try {
             transaction = session.beginTransaction();
-            Criteria criteria = session.createCriteria(PersonStock.class);
+            Criteria criteria = session.createCriteria(DAOPersonStock.class);
             criteria.add(Restrictions.eq("person", person));
 
-            List<PersonStock> list = criteria.list();
-            for (PersonStock personStock : list) {
+            List<DAOPersonStock> list = criteria.list();
+            for (DAOPersonStock personStock : list) {
                 stocks.add(personStock.getStockSymbol());
             }
             transaction.commit();
@@ -108,6 +110,7 @@ public class DatabasePersonService implements PersonService {
             if (transaction != null && transaction.isActive()) {
                 transaction.rollback();  // close transaction
             }
+            throw new PersonServiceException("Could not get stocks for DAOPPerson. " + e.getMessage(), e);
         } finally {
             if (transaction != null && transaction.isActive()) {
                 transaction.commit();
@@ -117,21 +120,21 @@ public class DatabasePersonService implements PersonService {
     }
 
     /**
-     * This method associates a stock with a person.
+     * Associates a stock with a person.
      *
      * @param stockSymbol               a stock symbol
-     * @param person                    a {@code Person} instance
+     * @param person                    a {@code DAOPerson} instance
      * @throws PersonServiceException   if a service can not read or write the requested data or otherwise perform the
      *                                  requested operation
      */
     @Override
-    public void addStockToPerson(String stockSymbol, Person person) throws PersonServiceException {
+    public void addStockToPerson(String stockSymbol, DAOPerson person) throws PersonServiceException {
 
         Session session =  DatabaseUtility.getSessionFactory().openSession();
         Transaction transaction = null;
         try {
             transaction = session.beginTransaction();
-            PersonStock personStock = new PersonStock();
+            DAOPersonStock personStock = new DAOPersonStock();
             personStock.setStockSymbol(stockSymbol);
             personStock.setPerson(person);
             session.saveOrUpdate(personStock);
@@ -140,7 +143,7 @@ public class DatabasePersonService implements PersonService {
             if (transaction != null && transaction.isActive()) {
                 transaction.rollback();  // close transaction
             }
-            System.out.println(e.getMessage());
+            throw new PersonServiceException("Could not link stock to DAOPerson. " + e.getMessage(), e);
         } finally {
             if (transaction != null && transaction.isActive()) {
                 transaction.commit();

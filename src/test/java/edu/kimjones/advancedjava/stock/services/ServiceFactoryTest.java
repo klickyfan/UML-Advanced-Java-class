@@ -3,8 +3,7 @@ package edu.kimjones.advancedjava.stock.services;
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * This class tests the ServiceFactory class.
@@ -29,7 +28,7 @@ public class ServiceFactoryTest {
 
     @Test
     public void testGetStockServiceNegative() {
-        assertFalse("stock service is null", stockService == null);
+        assertNotNull("stock service is null", stockService);
     }
 
     @Test
@@ -39,7 +38,7 @@ public class ServiceFactoryTest {
 
     @Test
     public void testGetPersonServiceNegative() {
-        assertFalse("person service is null", personService == null);
+        assertNotNull("person service is null", personService);
     }
 
 }

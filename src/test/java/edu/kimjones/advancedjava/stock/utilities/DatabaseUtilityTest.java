@@ -1,12 +1,14 @@
 package edu.kimjones.advancedjava.stock.utilities;
 
 import com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException;
+
 import org.junit.Test;
 
 import java.sql.Connection;
 import java.sql.SQLException;
 
 import static org.hamcrest.CoreMatchers.is;
+
 import static org.junit.Assert.*;
 
 /**
@@ -14,7 +16,7 @@ import static org.junit.Assert.*;
 */
 public class DatabaseUtilityTest {
 
-    private String initializationFile = "./src/main/sql/initialization_test.sql";
+    private final String initializationFile = "./src/main/sql/initialization_test.sql";
 
     @Test
     public void testGetConnectionPositive() throws DatabaseConnectionException, SQLException {
@@ -28,7 +30,7 @@ public class DatabaseUtilityTest {
     public void testGetConnectionNegative() throws DatabaseConnectionException, SQLException {
 
         Connection connection = DatabaseUtility.getConnection();
-        assertFalse("connection is null", connection == null);
+        assertNotNull("connection is null", connection);
         connection.close();
     }
 

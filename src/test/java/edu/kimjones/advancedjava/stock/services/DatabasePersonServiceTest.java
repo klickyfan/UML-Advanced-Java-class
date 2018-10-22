@@ -1,7 +1,7 @@
 package edu.kimjones.advancedjava.stock.services;
 
-import edu.kimjones.advancedjava.stock.model.Person;
-import edu.kimjones.advancedjava.stock.model.PersonTest;
+import edu.kimjones.advancedjava.stock.model.DAOPerson;
+import edu.kimjones.advancedjava.stock.model.DAOPersonTest;
 import edu.kimjones.advancedjava.stock.utilities.DatabaseUtility;
 import org.junit.After;
 import org.junit.Before;
@@ -9,8 +9,7 @@ import org.junit.Test;
 
 import java.util.List;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * This class is for testing the DatabasePersonService class.
@@ -20,7 +19,7 @@ import static org.junit.Assert.assertTrue;
 public class DatabasePersonServiceTest {
 
     private PersonService personService;
-    private Person testPerson;
+    private DAOPerson testPerson;
 
     @Before
     public void setUp() throws Exception {
@@ -30,11 +29,11 @@ public class DatabasePersonServiceTest {
 
         this.personService = ServiceFactory.getPersonService();
 
-        this.testPerson = new Person();
-        this.testPerson.setId(PersonTest.id);
-        this.testPerson.setFirstName(PersonTest.firstName);
-        this.testPerson.setLastName(PersonTest.lastName);
-        this.testPerson.setBirthDate(PersonTest.birthDate);
+        this.testPerson = new DAOPerson();
+        this.testPerson.setId(DAOPersonTest.id);
+        this.testPerson.setFirstName(DAOPersonTest.firstName);
+        this.testPerson.setLastName(DAOPersonTest.lastName);
+        this.testPerson.setBirthDate(DAOPersonTest.birthDate);
     }
 
     @After
@@ -46,27 +45,27 @@ public class DatabasePersonServiceTest {
     @Test
     public void getPersonListPositive() throws PersonServiceException {
 
-        List<Person> personList = personService.getPersonList();
+        List<DAOPerson> personList = personService.getPersonList();
         assertTrue("person list a list", personList instanceof List);
         personService.addOrUpdatePerson(testPerson);
         personList = personService.getPersonList();
-        assertTrue("person list a list of person instances", personList.size()>0 && (personList.get(0) instanceof Person));
+        assertTrue("person list a list of person instances", personList.size()>0 && (personList.get(0) instanceof DAOPerson));
     }
 
     @Test
     public void getPersonListNegative() throws PersonServiceException {
 
-        List<Person> personList = personService.getPersonList();
-        assertFalse("person list is null", personList == null);
+        List<DAOPerson> personList = personService.getPersonList();
+        assertNotNull("person list is null", personList);
     }
 
     @Test
-    public void testAddOrUpdatePersonPositive() throws PersonServiceException {
+    public void testAddOrUpdatePerson() throws PersonServiceException {
 
         personService.addOrUpdatePerson(testPerson);
-        List<Person> personList = personService.getPersonList();
+        List<DAOPerson> personList = personService.getPersonList();
         boolean found = false;
-        for (Person person : personList) {
+        for (DAOPerson person : personList) {
             if (person.equals(testPerson)) {
                 found = true;
                 break;
@@ -79,10 +78,10 @@ public class DatabasePersonServiceTest {
     @Test
     public void testGetStocksPositive() throws PersonServiceException {
 
-        List<Person> personList = personService.getPersonList();
-
+        List<DAOPerson> personList = personService.getPersonList();
         List<String> stocks = personService.getStocks(personList.get(0));
-        assertTrue("stock list has 3 stocks", stocks.size() == 3);
+
+        assertEquals("stock list has 3 stocks", 3, stocks.size());
         assertTrue("stock list contains GOOG", stocks.contains("GOOG"));
         assertTrue("stock list contains GOOG", stocks.contains("AAPL"));
         assertTrue("stock list contains GOOG", stocks.contains("NFLX"));
@@ -91,11 +90,11 @@ public class DatabasePersonServiceTest {
     @Test
     public void testGetStocksNegative() throws PersonServiceException {
 
-        List<Person> personList = personService.getPersonList();
-
+        List<DAOPerson> personList = personService.getPersonList();
         List<String> stocks = personService.getStocks(personList.get(0));
+
         assertFalse("stock list is empty", stocks.isEmpty());
-        assertFalse("stock list has 1 stock", stocks.size() == 1);
+        assertNotEquals("stock list has 1 stock", 1, stocks.size());
         assertFalse("stock list contains ABC", stocks.contains("ABC"));
     }
 
@@ -109,13 +108,13 @@ public class DatabasePersonServiceTest {
 
         personService.addStockToPerson("ABC",testPerson);
         stocks = personService.getStocks(testPerson);
-        assertTrue("stock list now has 1 stock", stocks.size() == 1);
-        assertTrue("stock list contains ABC", stocks.get(0).equals("ABC"));
+        assertEquals("stock list now has 1 stock", 1, stocks.size());
+        assertEquals("stock list contains ABC", "ABC", stocks.get(0));
 
         personService.addStockToPerson("123",testPerson);
         stocks = personService.getStocks(testPerson);
-        assertTrue("stock list now has 2 stocks", stocks.size() == 2);
-        assertTrue("stock list contains 123", stocks.get(1).equals("123"));
+        assertEquals("stock list now has 2 stocks", 2, stocks.size());
+        assertEquals("stock list contains 123", "123", stocks.get(1));
     }
 
     @Test
@@ -124,12 +123,12 @@ public class DatabasePersonServiceTest {
         personService.addOrUpdatePerson(testPerson);
 
         List<String> stocks = personService.getStocks(testPerson);
-        assertFalse("initial stock list has 1 item", stocks.size() == 1);
+        assertNotEquals("initial stock list has 1 item", 1, stocks.size());
 
         personService.addStockToPerson("ABC",testPerson);
         stocks = personService.getStocks(testPerson);
         assertFalse("stock list now is empty", stocks.isEmpty());
-        assertFalse("stock list contains 123", stocks.get(0).equals("123"));
+        assertNotEquals("stock list contains 123", "123", stocks.get(0));
     }
 }
 

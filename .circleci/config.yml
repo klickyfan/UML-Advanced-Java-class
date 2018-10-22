@@ -7,13 +7,14 @@ jobs:
   build:
     docker:
     - image: circleci/openjdk:8-jdk
-    - image: circleci/mysql:5.7
+    - image: circleci/mysql:latest
       environment:
       - MYSQL_ROOT_PASSWORD: r00tp@ssw0rd
       - MYSQL_DATABASE: stocks
       - MYSQL_USER: monty
       - MYSQL_PASSWORD: m0nty
     working_directory: ~/repo
+    command: [--default-authentication-plugin=mysql_native_password]
     environment:
     - MAVEN_OPTS: -Xmx3200m -Dmaven.wagon.http.ssl.insecure=true -Dmaven.wagon.http.ssl.allowall=true -Dmaven.wagon.http.ssl.ignore.validity.dates=true
     steps:

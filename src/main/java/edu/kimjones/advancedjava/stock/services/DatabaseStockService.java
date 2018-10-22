@@ -1,9 +1,14 @@
 package edu.kimjones.advancedjava.stock.services;
 
-import edu.kimjones.advancedjava.stock.model.StockQuote;
+import edu.kimjones.advancedjava.stock.model.DAOStockQuote;
 import edu.kimjones.advancedjava.stock.utilities.DatabaseConnectionException;
 import edu.kimjones.advancedjava.stock.utilities.DatabaseUtility;
+
 import org.apache.commons.lang3.time.DateUtils;
+
+import org.hibernate.HibernateException;
+import org.hibernate.Session;
+import org.hibernate.Transaction;
 
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
@@ -12,6 +17,7 @@ import java.sql.*;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -22,39 +28,39 @@ import java.util.List;
 public class DatabaseStockService implements StockService {
 
     /**
-     * This method gets a stock quote (containing the current price) for the company indicated by the given symbol.
+     * Gets a stock quote (containing the current price) for the company indicated by the given symbol.
      *
      * @param symbol                    a stock symbol of a company, e.g. "APPL" for Apple
-     * @return                          an instance of {@code StockQuote} (containing the current price) for the
+     * @return                          an instance of {@code DAOStockQuote} (containing the current price) for the
      *                                  company with the given symbol
      * @throws StockServiceException    if an exception occurs when trying to get the quote
      */
     @Override
-    public StockQuote getLatestStockQuote(@NotNull String symbol) throws StockServiceException {
+    public DAOStockQuote getLatestStockQuote(@NotNull String symbol) throws StockServiceException {
 
         return constructStockQuote(symbol, new java.util.Date());
     }
 
     /**
-     * This method gets a stock quote (containing the current price) for the company indicated by the given symbol on
-     * the given date.
+     * Gets a stock quote (containing the current price) for the company indicated by the given symbol on the given
+     * date.
      *
      * @param symbol                    a stock symbol of a company, e.g. "APPL" for Apple
      * @param date                      a date
-     * @return                          instance of {@code StockQuote} containing the current price) for the
+     * @return                          instance of {@code DAOStockQuote} containing the current price) for the
      *                                  company with the given symbol on the given date
      * @throws StockServiceException    if an exception occurs when trying to get the quote
      */
     @Override
-    public StockQuote getStockQuote(@NotNull String symbol, @NotNull java.util.Date date) throws StockServiceException {
+    public DAOStockQuote getStockQuote(@NotNull String symbol, @NotNull java.util.Date date) throws StockServiceException {
 
         return constructStockQuote(symbol, date);
     }
 
     /**
-     * This method gets a list of stock quotes for the company indicated by the given symbol, one for each day in the
-     * given date range.
-     **
+     * Gets a list of stock quotes for the company indicated by the given symbol, one for each day in the given date
+     * range.
+     *
      * @param symbol                    a stock symbol of a company, e.g. "APPL" for Apple
      * @param from                      the date of the first stock quote
      * @param until                     the date of the last stock quote
@@ -63,12 +69,11 @@ public class DatabaseStockService implements StockService {
      * @throws StockServiceException    if an exception occurs when trying to get the quote list
      */
     @Override
-    public List<StockQuote> getStockQuoteList(@NotNull String symbol, @NotNull Calendar from, @NotNull Calendar until) throws StockServiceException {
+    public List<DAOStockQuote> getStockQuoteList(@NotNull String symbol, @NotNull Calendar from, @NotNull Calendar until) throws StockServiceException {
 
-        List<StockQuote> stockQuoteList = new ArrayList<StockQuote>();
+        List<DAOStockQuote> stockQuoteList = new ArrayList<DAOStockQuote>();
 
         if (!from.after(until)) { // stop if from is after than until
-
             constructStockQuoteList(stockQuoteList, symbol, from, until, StockQuoteInterval.DAILY);
         }
 
@@ -76,8 +81,8 @@ public class DatabaseStockService implements StockService {
     }
 
     /**
-     * This method gets a list of stock quotes for the company indicated by the given symbol, one for each period
-     * in the given interval in the given date range.
+     * Gets a list of stock quotes for the company indicated by the given symbol, one for each period in the given
+     * interval in the given date range.
      *
      * @param symbol                    a stock symbol of a company, e.g. "APPL" for Apple
      * @param from                      the date of the first stock quote
@@ -89,12 +94,11 @@ public class DatabaseStockService implements StockService {
      * @throws StockServiceException    if an exception occurs when trying to get the quote list
      */
     @Override
-    public List<StockQuote> getStockQuoteList(@NotNull String symbol, @NotNull Calendar from, @NotNull Calendar until, @NotNull StockQuoteInterval interval) throws StockServiceException {
+    public List<DAOStockQuote> getStockQuoteList(@NotNull String symbol, @NotNull Calendar from, @NotNull Calendar until, @NotNull StockQuoteInterval interval) throws StockServiceException {
 
-        List<StockQuote> stockQuoteList = new ArrayList<StockQuote>();
+        List<DAOStockQuote> stockQuoteList = new ArrayList<DAOStockQuote>();
 
         if (!from.after(until)) { // stop if from is after than until
-
             constructStockQuoteList(stockQuoteList, symbol, from, until, interval);
         }
 
@@ -102,18 +106,18 @@ public class DatabaseStockService implements StockService {
     }
 
     /**
-     * This method does the work needed by {@code}getLatestStockQuote and getStockQuote} to construct a
-     * {@code StockQuote} instance for a company with the given symbol as recent as the given date.
+     * Does the work needed by {@code}getLatestStockQuote and getStockQuote} to construct a {@code DAOStockQuote}
+     * instance for a company with the given symbol as recent as the given date.
      *
      * @param symbol                    a stock symbol of a company, e.g. "APPL" for Apple
      * @param date                      the date
-     * @return                          instance of {@code StockQuote} containing the current price) for the
+     * @return                          instance of {@code DAOStockQuote} containing the current price) for the
      *                                  company with the given symbol on the given date
      * @throws StockServiceException    if an exception occurs when trying to get the quote
      */
-    private StockQuote constructStockQuote(@NotNull String symbol, @NotNull java.util.Date date) throws StockServiceException {
+    private DAOStockQuote constructStockQuote(@NotNull String symbol, @NotNull java.util.Date date) throws StockServiceException {
 
-        StockQuote stockQuote = null;
+        DAOStockQuote stockQuote = null;
 
         try {
 
@@ -136,10 +140,10 @@ public class DatabaseStockService implements StockService {
             if (resultSet.next()) { // if we found a quote...
 
                 String symbolValue = resultSet.getString("symbol");
-                BigDecimal price = resultSet.getBigDecimal("price").setScale(2, RoundingMode.HALF_UP);;
+                BigDecimal price = resultSet.getBigDecimal("price").setScale(2, RoundingMode.HALF_UP);
                 Timestamp timestamp = resultSet.getTimestamp("time");
 
-                stockQuote = new StockQuote(symbolValue, price, DateUtils.round(new java.util.Date(timestamp.getTime()), Calendar.HOUR));
+                stockQuote = new DAOStockQuote(symbolValue, price, DateUtils.round(new java.util.Date(timestamp.getTime()), Calendar.HOUR));
             }
 
         } catch (DatabaseConnectionException | SQLException exception) {
@@ -147,15 +151,15 @@ public class DatabaseStockService implements StockService {
         }
 
         if (stockQuote == null) {
-            throw new StockServiceException("There is no stock data for:" + symbol);
+            throw new StockServiceException("There is no stock data for symbol " + symbol);
         }
 
         return stockQuote;
     }
 
     /**
-     * This method does the work needed by {@code}List<StockQuote>getStockQuoteList(...} to construct a list of
-     * {@code StockQuote} instances for a company with the given symbol, in the given date range and on the given
+     * Does the work needed by {@code}List<DAOStockQuote>getStockQuoteList(...} to construct a list of
+     * {@code DAOStockQuote} instances for a company with the given symbol, in the given date range and on the given
      * interval.
      *
      * @param stockQuoteList            the list we are building out
@@ -164,11 +168,10 @@ public class DatabaseStockService implements StockService {
      * @param until                     the date of the last stock quote
      * @param interval                  the interval between which stock quotes should be obtained, i.e. if DAILY, then
      *                                  one per day
-     *
      * @throws StockServiceException    if an exception occurs when trying to get the quote ist
      */
     private void constructStockQuoteList(
-            @NotNull List<StockQuote> stockQuoteList,
+            @NotNull List<DAOStockQuote> stockQuoteList,
             @NotNull String symbol,
             @NotNull Calendar from,
             @NotNull Calendar until,
@@ -187,8 +190,6 @@ public class DatabaseStockService implements StockService {
             statement.setTimestamp(2, new Timestamp(from.getTimeInMillis()));
             statement.setTimestamp(3, new Timestamp(until.getTimeInMillis()));
 
-            // System.out.println(statement.toString());
-
             ResultSet resultSet = statement.executeQuery();
 
             while(resultSet.next()) { // process the query results
@@ -197,7 +198,7 @@ public class DatabaseStockService implements StockService {
                 BigDecimal price = resultSet.getBigDecimal("price").setScale(2, RoundingMode.HALF_UP);
                 Timestamp timestamp = resultSet.getTimestamp("time");
 
-                stockQuoteList.add(new StockQuote(symbolValue, price, DateUtils.round(new java.util.Date(timestamp.getTime()), Calendar.HOUR)));
+                stockQuoteList.add(new DAOStockQuote(symbolValue, price, DateUtils.round(new java.util.Date(timestamp.getTime()), Calendar.HOUR)));
             }
 
         } catch (DatabaseConnectionException | SQLException exception) {
@@ -205,7 +206,39 @@ public class DatabaseStockService implements StockService {
         }
 
         if (stockQuoteList.isEmpty()) {
-            throw new StockServiceException("There is no stock data for:" + symbol);
+            throw new StockServiceException("There is no stock data for symbol " + symbol);
+        }
+    }
+
+    /**
+     * This method adds a new stock quote to the list of stocks already managed by the service, or updates a stock
+     * already in that list.
+
+     * @param stockSymbol               the symbol of a company
+     * @param stockPrice                the price of that company's stock
+     * @param dateRecorded              the date of the price
+     *
+     * @throws StockServiceException   if a service can not read or write the requested data or otherwise perform the
+     *                                  requested operation
+     */
+    public void addOrUpdateStockQuote(@NotNull String stockSymbol, @NotNull BigDecimal stockPrice, @NotNull Date dateRecorded) throws StockServiceException {
+
+        Session session =  DatabaseUtility.getSessionFactory().openSession();
+        Transaction transaction = null;
+        try {
+            transaction = session.beginTransaction();
+            DAOStockQuote stockQuote = new DAOStockQuote(stockSymbol, stockPrice, dateRecorded);
+            session.saveOrUpdate(stockQuote);
+            transaction.commit();
+        } catch (HibernateException e) {
+            if (transaction != null && transaction.isActive()) {
+                transaction.rollback();  // close transaction
+            }
+            throw new StockServiceException("Could not add or update stock with symbol " + stockSymbol + ". " + e.getMessage(), e);
+        } finally {
+            if (transaction != null && transaction.isActive()) {
+                transaction.commit();
+            }
         }
     }
 }
