@@ -6,41 +6,38 @@ version: 2
 jobs:
   build:
     docker:
+    
     - image: circleci/openjdk:8-jdk
-    - image: circleci/mysql:5.7
+    
+    - image: circleci/mysql:latest-ram
       environment:
       - MYSQL_ROOT_PASSWORD: r00tp@ssw0rd
       - MYSQL_DATABASE: stocks
       - MYSQL_USER: monty
       - MYSQL_PASSWORD: m0nty
+      
     working_directory: ~/repo
+    
     environment:
-    - MAVEN_OPTS: -Xmx3200m -Dmaven.wagon.http.ssl.insecure=true -Dmaven.wagon.http.ssl.allowall=true -Dmaven.wagon.http.ssl.ignore.validity.dates=true
+      MAVEN_OPTS: -Xmx3200m -Dmaven.wagon.http.ssl.insecure=true -Dmaven.wagon.http.ssl.allowall=true -Dmaven.wagon.http.ssl.ignore.validity.dates=true
+ 
     steps:
+    
     - checkout
+    
     - run: sudo apt install -y mysql-client
-    - run:
-        name: Install dockerize
-        command: wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz && sudo tar -C /usr/local/bin -xzvf dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz && rm dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz
-        environment:
-          DOCKERIZE_VERSION: v0.3.0
-    - run:
-        name: Wait for MySQL
-        command: dockerize -wait tcp://localhost:3306 -timeout 10s
+    
     - restore_cache:
         keys:
         - v1-dependencies-{{ checksum "pom.xml" }}
-        # fallback to using the latest cache if no exact match is found
-        - v1-dependencies-   
+        - v1-dependencies-
+
     - run: mvn dependency:go-offline
+
     - save_cache:
         paths:
         - ~/.m2
         key: v1-dependencies-{{ checksum "pom.xml" }}
+
+    # run tests!
     - run: mvn integration-test
-    
-workflows:
-  version: 2
-  workflow:
-    jobs:
-    - build
