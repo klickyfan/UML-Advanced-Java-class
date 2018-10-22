@@ -38,7 +38,7 @@ public class Assignment7StockApplication {
     public static void main(String[] args)
             throws IOException, InvalidXMLException, DatabaseInitializationException, StockServiceException, ParseException {
 
-        // try out log4j
+        /* try out log4j */
         LOGGER.debug("Test DEBUG message logged !!!");
         LOGGER.info("Test INFO Message logged !!!");
         LOGGER.error("Test ERROR message logged !!!");
