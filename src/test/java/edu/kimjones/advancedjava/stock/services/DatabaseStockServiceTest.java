@@ -58,7 +58,7 @@ public class DatabaseStockServiceTest {
         String stockSymbol = "OOOO";
         this.databaseQuoteNow = stockService.getLatestStockQuote(stockSymbol);
         this.databaseQuoteNow = stockService.getLatestStockQuote(stockSymbol);
-        this.databaseQuoteOnDate = stockService.getStockQuote(stockSymbol, stockDate);
+        //this.databaseQuoteOnDate = stockService.getStockQuote(stockSymbol, stockDate);
 
         /*
           prepare to test getStockQuoteList on hour interval
