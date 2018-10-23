@@ -57,6 +57,7 @@ public class DatabaseStockServiceTest {
         // this is an untaken stock symbol
         String stockSymbol = "OOOO";
         this.databaseQuoteNow = stockService.getLatestStockQuote(stockSymbol);
+        this.databaseQuoteNow = stockService.getLatestStockQuote(stockSymbol);
         //this.databaseQuoteOnDate = stockService.getStockQuote(stockSymbol, stockDate);
 
         /*
