@@ -2,18 +2,25 @@ package edu.kimjones.advancedjava.stock.services;
 
 import edu.kimjones.advancedjava.stock.model.DAOStockQuote;
 import edu.kimjones.advancedjava.stock.utilities.DatabaseUtility;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+
 import java.text.SimpleDateFormat;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
+import static edu.kimjones.advancedjava.stock.utilities.TestUtility.parseDateString;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
+import static org.junit.Assert.*;
 
 /**
  * This class is for testing the DatabaseStockService class.
@@ -28,7 +35,7 @@ public class DatabaseStockServiceTest {
     private DAOStockQuote databaseQuoteOnDate;
 
     private final BigDecimal latestStockPriceExpected = BigDecimal.valueOf(84.61).setScale(2, RoundingMode.HALF_UP);
-    private final BigDecimal stockPriceExpected = BigDecimal.valueOf(118.55).setScale(2, RoundingMode.HALF_UP);
+    private final BigDecimal stockPriceExpected = BigDecimal.valueOf(82.35).setScale(2, RoundingMode.HALF_UP);
     private final BigDecimal stockPriceNotExpected = BigDecimal.valueOf(1.0).setScale(2, RoundingMode.HALF_UP);
 
     private List<DAOStockQuote> databaseHourlyStockQuoteList;
@@ -48,7 +55,7 @@ public class DatabaseStockServiceTest {
         this.stockService = ServiceFactory.getStockService();
 
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-        Date stockDate = dateFormat.parse("2018-10-10 00:00");
+        Date stockDate = dateFormat.parse("2018-10-09 00:00");
 
         /*
           prepare to test versions of getStockQuote that return a single quote
@@ -57,13 +64,12 @@ public class DatabaseStockServiceTest {
         // this is an untaken stock symbol
         String stockSymbol = "OOOO";
         this.databaseQuoteNow = stockService.getLatestStockQuote(stockSymbol);
-        this.databaseQuoteNow = stockService.getLatestStockQuote(stockSymbol);
         this.databaseQuoteOnDate = stockService.getStockQuote(stockSymbol, stockDate);
 
         /*
           prepare to test getStockQuoteList on hour interval
          */
-/*
+
         this.databaseHourlyStockQuoteList =
                 stockService.getStockQuoteList(stockSymbol, parseDateString("9/20/2018"), parseDateString("9/21/2018"), StockService.StockQuoteInterval.HOURLY);
 
@@ -86,7 +92,7 @@ public class DatabaseStockServiceTest {
         /*
           prepare to test getStockQuoteList on daily interval
          */
-/*
+
         this.databaseDailyStockQuoteList = stockService.getStockQuoteList(stockSymbol, parseDateString("10/1/2018"), parseDateString("10/3/2018"), StockService.StockQuoteInterval.DAILY);
 
         this.databaseDailyStockQuoteListExpected.add(
@@ -104,8 +110,6 @@ public class DatabaseStockServiceTest {
                         stockSymbol,
                         new BigDecimal(83.91).setScale(2, RoundingMode.HALF_UP),
                         dateFormat.parse("2018-10-03 00:00")));
-                        */
-
     }
 
     @After
@@ -119,7 +123,6 @@ public class DatabaseStockServiceTest {
         assertEquals("price is " + this.latestStockPriceExpected, this.latestStockPriceExpected, this.databaseQuoteNow.getStockPrice());
     }
 
-/*
     @Test
     public void testGetLatestStockQuoteNegative() {
         assertNotSame("price is not " + this.latestStockPriceExpected, this.stockPriceNotExpected, this.databaseQuoteNow.getStockPrice());
@@ -168,7 +171,7 @@ public class DatabaseStockServiceTest {
 
         Date date;
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        date  = dateFormat.parse("2018-10-22 12:00:00");
+        date = dateFormat.parse("2018-10-22 12:00:00");
 
         DAOStockQuote testStockQuote = new DAOStockQuote(symbol, price, date);
 
@@ -187,6 +190,5 @@ public class DatabaseStockServiceTest {
 
         assertTrue("found the testStockQuote we added", found);
     }
-    */
 }
 

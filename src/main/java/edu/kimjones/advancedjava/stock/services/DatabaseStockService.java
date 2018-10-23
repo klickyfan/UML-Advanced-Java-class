@@ -133,11 +133,11 @@ public class DatabaseStockService implements StockService {
                             .atZone(ZoneId.of( "America/New_York" ))  // adjust from UTC to EST
                             .toLocalDate());
 
-            System.out.println(statement.toString());
+            //System.out.println(statement.toString());
 
             ResultSet resultSet = statement.executeQuery();
 
-            System.out.println(resultSet.toString());
+            //System.out.println(resultSet.toString());
 
             if (resultSet.next()) { // if we found a quote...
 
@@ -153,14 +153,15 @@ public class DatabaseStockService implements StockService {
         }
 
         if (stockQuote == null) {
-            throw new StockServiceException("There is no stock data for symbol " + symbol);
+            String message = String.format("There is no stock data for symbol %s on date %tD %n.", symbol, date);
+            throw new StockServiceException(message);
         }
 
         return stockQuote;
     }
 
     /**
-     * Does the work needed by {@code}List<DAOStockQuote>getStockQuoteList(...} to construct a list of
+     * Does the work needed by {@code List<DAOStockQuote>getStockQuoteList(...} to construct a list of
      * {@code DAOStockQuote} instances for a company with the given symbol, in the given date range and on the given
      * interval.
      *
