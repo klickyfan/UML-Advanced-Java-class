@@ -127,7 +127,7 @@ public class DatabaseStockServiceTest {
 
     @Test
     public void testGetLatestStockQuotePositive() {
-        //assertEquals("price is " + this.latestStockPriceExpected, this.latestStockPriceExpected, this.databaseQuoteNow.getStockPrice());
+        assertEquals("price is " + this.latestStockPriceExpected, this.latestStockPriceExpected, this.databaseQuoteNow.getStockPrice());
     }
 
 /*
