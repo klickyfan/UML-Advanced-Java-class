@@ -48,7 +48,7 @@ public class DatabaseStockServiceTest {
         this.stockService = ServiceFactory.getStockService();
 
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-        Date stockDate = dateFormat.parse("2018-09-21 00:00");
+        Date stockDate = dateFormat.parse("2018-10-10 00:00");
 
         /*
           prepare to test versions of getStockQuote that return a single quote
@@ -58,7 +58,7 @@ public class DatabaseStockServiceTest {
         String stockSymbol = "OOOO";
         this.databaseQuoteNow = stockService.getLatestStockQuote(stockSymbol);
         this.databaseQuoteNow = stockService.getLatestStockQuote(stockSymbol);
-        //this.databaseQuoteOnDate = stockService.getStockQuote(stockSymbol, stockDate);
+        this.databaseQuoteOnDate = stockService.getStockQuote(stockSymbol, stockDate);
 
         /*
           prepare to test getStockQuoteList on hour interval
