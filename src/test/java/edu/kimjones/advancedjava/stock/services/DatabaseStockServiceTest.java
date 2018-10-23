@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import static edu.kimjones.advancedjava.stock.utilities.TestUtility.parseDateString;
 import static org.junit.Assert.assertEquals;
 
 /**
@@ -53,17 +54,16 @@ public class DatabaseStockServiceTest {
         /*
           prepare to test versions of getStockQuote that return a single quote
          */
+
         // this is an untaken stock symbol
         String stockSymbol = "OOOO";
         this.databaseQuoteNow = stockService.getLatestStockQuote(stockSymbol);
-
-        /*
         this.databaseQuoteOnDate = stockService.getStockQuote(stockSymbol, stockDate);
 
         /*
           prepare to test getStockQuoteList on hour interval
          */
-        /*
+
         this.databaseHourlyStockQuoteList =
                 stockService.getStockQuoteList(stockSymbol, parseDateString("9/20/2018"), parseDateString("9/21/2018"), StockService.StockQuoteInterval.HOURLY);
 
@@ -82,11 +82,11 @@ public class DatabaseStockServiceTest {
                         stockSymbol,
                         new BigDecimal(118.55).setScale(2, RoundingMode.HALF_UP),
                         dateFormat.parse("2018-09-20 16:00"));
-*/
+
         /*
           prepare to test getStockQuoteList on daily interval
          */
-        /*
+
         this.databaseDailyStockQuoteList = stockService.getStockQuoteList(stockSymbol, parseDateString("10/1/2018"), parseDateString("10/3/2018"), StockService.StockQuoteInterval.DAILY);
 
         this.databaseDailyStockQuoteListExpected.add(
@@ -104,7 +104,7 @@ public class DatabaseStockServiceTest {
                         stockSymbol,
                         new BigDecimal(83.91).setScale(2, RoundingMode.HALF_UP),
                         dateFormat.parse("2018-10-03 00:00")));
-                        */
+
     }
 
     @After
