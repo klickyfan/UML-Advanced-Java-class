@@ -43,13 +43,19 @@ public class DatabaseStockServiceTest {
     @Before
     public void setUp() throws Exception {
 
+        System.out.println("Initializing database...");
         DatabaseUtility.initializeDatabase(DatabaseUtility.initializationFile);
+
+        System.out.println("Adding test data to database...");
         DatabaseUtility.initializeDatabase("./src/main/sql/add_stock_service_test_data.sql");
 
+        System.out.println("Getting stock service...");
         this.stockService = ServiceFactory.getStockService();
 
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         Date stockDate = dateFormat.parse("2018-09-21 00:00");
+
+        System.out.println("Getting stock quote...");
 
         /*
           prepare to test versions of getStockQuote that return a single quote
@@ -57,6 +63,12 @@ public class DatabaseStockServiceTest {
         // this is an untaken stock symbol
         String stockSymbol = "OOOO";
         this.databaseQuoteNow = stockService.getLatestStockQuote(stockSymbol);
+
+
+        System.out.println("Testing here...");
+
+        assertEquals("price is " + this.latestStockPriceExpected, this.latestStockPriceExpected, this.databaseQuoteNow.getStockPrice());
+
 
         this.databaseQuoteOnDate = stockService.getStockQuote(stockSymbol, stockDate);
 
@@ -109,12 +121,13 @@ public class DatabaseStockServiceTest {
         DatabaseUtility.initializeDatabase(DatabaseUtility.initializationFile);
     }
 
+
     @Test
     public void testGetLatestStockQuotePositive() {
-        assertEquals("price is " + this.latestStockPriceExpected, this.latestStockPriceExpected, this.databaseQuoteNow.getStockPrice());
+        //assertEquals("price is " + this.latestStockPriceExpected, this.latestStockPriceExpected, this.databaseQuoteNow.getStockPrice());
     }
 
-    /*
+/*
     @Test
     public void testGetLatestStockQuoteNegative() {
         assertNotSame("price is not " + this.latestStockPriceExpected, this.stockPriceNotExpected, this.databaseQuoteNow.getStockPrice());
