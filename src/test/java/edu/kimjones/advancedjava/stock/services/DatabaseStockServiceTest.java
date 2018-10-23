@@ -13,7 +13,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import static edu.kimjones.advancedjava.stock.utilities.TestUtility.parseDateString;
 import static org.junit.Assert.assertEquals;
 
 /**
@@ -63,7 +62,7 @@ public class DatabaseStockServiceTest {
         /*
           prepare to test getStockQuoteList on hour interval
          */
-
+/*
         this.databaseHourlyStockQuoteList =
                 stockService.getStockQuoteList(stockSymbol, parseDateString("9/20/2018"), parseDateString("9/21/2018"), StockService.StockQuoteInterval.HOURLY);
 
