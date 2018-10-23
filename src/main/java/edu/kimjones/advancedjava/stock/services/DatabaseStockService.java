@@ -120,7 +120,7 @@ public class DatabaseStockService implements StockService {
         DAOStockQuote stockQuote = null;
 
         try {
-
+            // establish database connection
             Connection connection = DatabaseUtility.getConnection();
 
             // select the latest stock quote for the given symbol
@@ -133,9 +133,11 @@ public class DatabaseStockService implements StockService {
                             .atZone(ZoneId.of( "America/New_York" ))  // adjust from UTC to EST
                             .toLocalDate());
 
-            // System.out.println(statement.toString());
+            System.out.println(statement.toString());
 
             ResultSet resultSet = statement.executeQuery();
+
+            System.out.println(resultSet.toString());
 
             if (resultSet.next()) { // if we found a quote...
 
@@ -178,7 +180,6 @@ public class DatabaseStockService implements StockService {
             @NotNull StockQuoteInterval interval) throws StockServiceException {
 
         try {
-
             // establish database connection
             Connection connection = DatabaseUtility.getConnection();
 
