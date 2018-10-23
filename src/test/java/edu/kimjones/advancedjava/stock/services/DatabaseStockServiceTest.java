@@ -42,19 +42,13 @@ public class DatabaseStockServiceTest {
     @Before
     public void setUp() throws Exception {
 
-        System.out.println("Initializing database...");
         DatabaseUtility.initializeDatabase(DatabaseUtility.initializationFile);
-
-        System.out.println("Adding test data to database...");
         DatabaseUtility.initializeDatabase("./src/main/sql/add_stock_service_test_data.sql");
 
-        System.out.println("Getting stock service...");
         this.stockService = ServiceFactory.getStockService();
 
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         Date stockDate = dateFormat.parse("2018-09-21 00:00");
-
-        System.out.println("Getting stock quote...");
 
         /*
           prepare to test versions of getStockQuote that return a single quote
@@ -63,12 +57,6 @@ public class DatabaseStockServiceTest {
         String stockSymbol = "OOOO";
         this.databaseQuoteNow = stockService.getLatestStockQuote(stockSymbol);
 
-
-        System.out.println("Testing here...");
-
-        assertEquals("price is " + this.latestStockPriceExpected, this.latestStockPriceExpected, this.databaseQuoteNow.getStockPrice());
-
-        System.out.println("Done with assert...");
         /*
         this.databaseQuoteOnDate = stockService.getStockQuote(stockSymbol, stockDate);
 
