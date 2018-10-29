@@ -102,5 +102,14 @@ final public class XMLDOStockQuote implements XMLDomainObject {
     public void setTime(String value) {
         this.time = value;
     }
+
+    @Override
+    public String toString() {
+        return "XMLStockQuote{" +
+                "symbol='" + symbol + '\'' +
+                ", price='" + price + '\'' +
+                ", time='" + time + '\'' +
+                '}';
+    }
 }
 
