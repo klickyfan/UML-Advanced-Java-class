@@ -1,11 +1,11 @@
 package edu.kimjones.advancedjava.stock.utilities;
 
 import com.ibatis.common.jdbc.ScriptRunner;
-
+import edu.kimjones.advancedjava.stock.model.database.DatabaseAccessObject;
 import edu.kimjones.advancedjava.stock.services.DatabasePersonService;
-
-import org.hibernate.SessionFactory;
+import org.hibernate.*;
 import org.hibernate.cfg.Configuration;
+import org.hibernate.criterion.Restrictions;
 import org.hibernate.service.ServiceRegistry;
 import org.hibernate.service.ServiceRegistryBuilder;
 
@@ -13,10 +13,11 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This class encapsulates database related utility methods. For it to function properly, the working directory of the
@@ -124,6 +125,77 @@ public class DatabaseUtility {
             connection.close();
         } catch (DatabaseConnectionException | SQLException | IOException e) {
             throw new DatabaseInitializationException("Could not initialize database. " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Returns a list of objects of the given type {@code T} whose given property matches the given value, or an empty
+     * list if none are found.
+     *
+     * @param property                      a member of the class {@code T} that represents the column being search in
+     * @param value                         the value that is being match against in the column
+     * @param T                             a class that implements DatabasesAccessObject
+     * @return                              a list of type {@code T} objects or an empty list if none are found
+     * @throws DatabaseGetListException     if it has trouble getting the list
+     */
+    @SuppressWarnings("unchecked")  // Hibernate API requires unchecked OK per guidelines
+    public static <T extends DatabaseAccessObject> List<T> getListBy(
+            String property, Object value, Class T) throws DatabaseGetListException {
+        Session session = null;
+        Transaction transaction = null;
+        List<T> returnValue = new ArrayList<T>();
+        try {
+            session = getSessionFactory().openSession();
+            transaction = session.beginTransaction();
+
+            Criteria criteria = session.createCriteria(T);
+
+            if (!property.isEmpty()) {
+                criteria = criteria.add(Restrictions.eq(property, value));
+            }
+
+            returnValue = (List<T>) criteria.list();
+
+            transaction.commit();
+        } catch (HibernateException e) {
+            if (transaction != null && transaction.isActive()) {
+                transaction.rollback();  // close transaction
+            }
+            throw new DatabaseGetListException("Could not get list of " + T.getName() + "s.");
+        } finally {
+            if (session != null) {
+                session.close();
+            }
+        }
+        return returnValue;
+    }
+
+    /**
+     * Adds or updates the given {@code DatabaseAccessObject} to/in the database.
+     *
+     * @param o                                 the object to be added or updated
+     * @throws DatabaseAddOrUpdateException     if the object could not be added or updated
+     */
+    public static void addOrUpdate(DatabaseAccessObject o) throws DatabaseAddOrUpdateException {
+
+        Session session = null;
+        Transaction transaction = null;
+        try {
+            session = getSessionFactory().openSession();
+            transaction = session.beginTransaction();
+
+            session.saveOrUpdate(o);
+
+            transaction.commit();
+        } catch (HibernateException e) {
+            if (transaction != null && transaction.isActive()) {
+                transaction.rollback();  // close transaction
+            }
+            throw new DatabaseAddOrUpdateException("Could not add or update " + o.toString() + ".");
+        } finally {
+            if (transaction != null && transaction.isActive()) {
+                transaction.commit();
+            }
         }
     }
 }

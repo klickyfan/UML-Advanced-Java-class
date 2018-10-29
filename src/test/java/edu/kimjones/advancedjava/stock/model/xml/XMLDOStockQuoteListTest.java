@@ -1,4 +1,6 @@
-package edu.kimjones.advancedjava.stock.model;
+package edu.kimjones.advancedjava.stock.model.xml;
+
+import edu.kimjones.advancedjava.stock.model.database.DAOStockQuote;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -26,7 +28,6 @@ public class XMLDOStockQuoteListTest {
 
     @Before
     public void setUp() {
-
         this.stockQuoteList = new XMLDOStockQuoteList();
 
         this.firstStockQuoteExpected = new XMLDOStockQuote();

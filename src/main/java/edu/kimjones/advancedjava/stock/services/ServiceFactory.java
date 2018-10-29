@@ -18,10 +18,10 @@ public class ServiceFactory {
      * @return an object implementing the {@code StockService} interface
      * @throws StockServiceException if unable to do this
      */
-    public static final StockService getStockService() throws StockServiceException {
+    public static StockService getStockService() throws StockServiceException {
 
         try {
-            return new DatabaseStockService(); // replace as needed with any stock service
+            return new YahooStockServiceAdapter(); // replace as needed with any stock service
         }
         catch (Exception e) {
             System.err.println(e.getMessage());
@@ -33,7 +33,7 @@ public class ServiceFactory {
      * @return an object implementing the {@code PersonService} interface
      * @throws PersonServiceException if unable to do this
      */
-    public static final PersonService getPersonService() throws PersonServiceException {
+    public static PersonService getPersonService() throws PersonServiceException {
 
         try {
             return new DatabasePersonService(); // replace as needed with any person service

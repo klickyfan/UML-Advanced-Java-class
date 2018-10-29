@@ -1,11 +1,10 @@
-package edu.kimjones.advancedjava.stock.model;
-
-import nl.jqno.equalsverifier.EqualsVerifier;
+package edu.kimjones.advancedjava.stock.model.xml;
 
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 
 /**
  * This class is for testing the class {@code XMLDOStockQuote}.
@@ -56,10 +55,5 @@ public class XMLDOStockQuoteTest {
     @Test
     public void testTimeNegative() {
         assertNotEquals("date does not match", "10/22/2018", this.stockQuote.getTime());
-    }
-
-    @Test
-    public void testEqualsContract() {
-        EqualsVerifier.forClass(DAOStockQuote.class).verify();
     }
 }

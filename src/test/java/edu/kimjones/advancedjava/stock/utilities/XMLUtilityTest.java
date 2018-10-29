@@ -1,7 +1,7 @@
 package edu.kimjones.advancedjava.stock.utilities;
 
 import com.google.common.io.CharStreams;
-import edu.kimjones.advancedjava.stock.model.XMLDOStockQuoteList;
+import edu.kimjones.advancedjava.stock.model.xml.XMLDOStockQuoteList;
 import org.junit.Before;
 import org.junit.Test;
 import org.xmlunit.builder.DiffBuilder;

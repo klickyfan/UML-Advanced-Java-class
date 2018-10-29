@@ -18,6 +18,7 @@ CREATE TABLE quotes(
 
 CREATE TABLE person(
   id INT NOT NULL AUTO_INCREMENT,
+  username VARCHAR(256) NOT NULL,
   first_name VARCHAR(256) NOT NULL,
   last_name VARCHAR(256) NOT NULL,
   birth_date DATETIME NOT NULL,

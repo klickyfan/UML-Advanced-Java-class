@@ -1,14 +1,13 @@
 package edu.kimjones.advancedjava.stock.services;
 
-import edu.kimjones.advancedjava.stock.model.DAOStockQuote;
+import edu.kimjones.advancedjava.stock.model.database.DAOStockQuote;
+import edu.kimjones.advancedjava.stock.model.StockQuote;
 
 import org.junit.Before;
 import org.junit.Test;
 
 import java.math.BigDecimal;
-
 import java.time.LocalDate;
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -33,20 +32,19 @@ public class BasicStockServiceTest {
     private final BigDecimal stockPriceExpected = BigDecimal.valueOf(100.0);
     private final BigDecimal stockPriceNotExpected = BigDecimal.valueOf(1.0);
 
-    private DAOStockQuote basicQuoteNow;
-    private DAOStockQuote basicQuoteOnDate;
+    private StockQuote basicQuoteNow;
+    private StockQuote basicQuoteOnDate;
 
-    private List<DAOStockQuote> basicHourlyStockQuoteList;
-    private DAOStockQuote basicHourlyStockQuoteListFirstItemExpected;
-    private DAOStockQuote basicHourlyStockQuoteListLastItemExpected;
-    private DAOStockQuote basicHourlyStockQuoteListTenthItemExpected;
+    private List<StockQuote> basicHourlyStockQuoteList;
+    private StockQuote basicHourlyStockQuoteListFirstItemExpected;
+    private StockQuote basicHourlyStockQuoteListLastItemExpected;
+    private StockQuote basicHourlyStockQuoteListTenthItemExpected;
 
-    private List<DAOStockQuote> basicDailyStockQuoteList;
-    private final List<DAOStockQuote> basicDailyStockQuoteListExpected = new ArrayList<DAOStockQuote>();
+    private List<StockQuote> basicDailyStockQuoteList;
+    private final List<StockQuote> basicDailyStockQuoteListExpected = new ArrayList<>();
 
     @Before
     public void setUp() throws Exception {
-
         LocalDate localDate = LocalDate.of(2018, 9, 16);
         Date stockDate = java.sql.Date.valueOf(localDate);
 
@@ -67,17 +65,17 @@ public class BasicStockServiceTest {
                 basicStockService.getStockQuoteList(stockSymbol, parseDateString("9/20/2018"), parseDateString("9/20/2018"), StockService.StockQuoteInterval.HOURLY);
 
         this.basicHourlyStockQuoteListFirstItemExpected =
-                new DAOStockQuote(
+                new StockQuote(
                         stockSymbol,
                         new BigDecimal(100.00),
                         java.sql.Date.valueOf(LocalDate.of(2018,9,20 )));
         this.basicHourlyStockQuoteListTenthItemExpected =
-                new DAOStockQuote(
+                new StockQuote(
                         stockSymbol,
                         new BigDecimal(110.00),
                         addHoursToDate(10, java.sql.Date.valueOf(LocalDate.of(2018,9,20 ))));
         this.basicHourlyStockQuoteListLastItemExpected =
-                new DAOStockQuote(
+                new StockQuote(
                         stockSymbol,
                         new BigDecimal(123.00),
                         addHoursToDate(HOURS_IN_DAY - 1, java.sql.Date.valueOf(LocalDate.of(2018,9,20 ))));
@@ -88,17 +86,17 @@ public class BasicStockServiceTest {
         this.basicDailyStockQuoteList = basicStockService.getStockQuoteList(stockSymbol, parseDateString("9/20/2018"), parseDateString("9/22/2018"), StockService.StockQuoteInterval.DAILY);
 
         this.basicDailyStockQuoteListExpected.add(
-                new DAOStockQuote(
+                new StockQuote(
                         stockSymbol,
                         new BigDecimal(100.00),
                         java.sql.Date.valueOf(LocalDate.of(2018,9,20 ))));
         this.basicDailyStockQuoteListExpected.add(
-                new DAOStockQuote(
+                new StockQuote(
                         stockSymbol,
                         new BigDecimal(101.00),
                         java.sql.Date.valueOf(LocalDate.of(2018,9,21 ))));
         this.basicDailyStockQuoteListExpected.add(
-                new DAOStockQuote(
+                new StockQuote(
                         stockSymbol,
                         new BigDecimal(102.00),
                         java.sql.Date.valueOf(LocalDate.of(2018,9,22 ))));

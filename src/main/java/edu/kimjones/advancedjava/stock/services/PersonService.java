@@ -1,6 +1,6 @@
 package edu.kimjones.advancedjava.stock.services;
 
-import edu.kimjones.advancedjava.stock.model.DAOPerson;
+import edu.kimjones.advancedjava.stock.model.Person;
 
 import java.util.List;
 
@@ -18,7 +18,7 @@ public interface PersonService {
      * @throws PersonServiceException   if a service can not read or write the requested data or otherwise perform the
      *                                  requested operation
      */
-    List<DAOPerson> getPersonList() throws PersonServiceException;
+    List<Person> getPersonList() throws PersonServiceException;
 
     /**
      * This method adds a new person to the list of people already managed by the service, or or updates an person
@@ -28,7 +28,7 @@ public interface PersonService {
      * @throws PersonServiceException   if a service can not read or write the requested data or otherwise perform the
      *                                  requested operation
      */
-    void addOrUpdatePerson(DAOPerson person) throws PersonServiceException;
+    void addOrUpdatePerson(Person person) throws PersonServiceException;
 
     /**
      * This method returns a list of all the stocks the given person is interested in.
@@ -37,7 +37,7 @@ public interface PersonService {
      * @throws PersonServiceException   if a service can not read or write the requested data or otherwise perform the
      *                                  requested operation
      */
-    List<String> getStocks(DAOPerson person) throws PersonServiceException;
+    List<String> getStockList(Person person) throws PersonServiceException;
 
     /**
      * This method associates a stock with a person.
@@ -47,5 +47,5 @@ public interface PersonService {
      * @throws PersonServiceException   if a service can not read or write the requested data or otherwise perform the
      *                                  requested operation
      */
-    void addStockToPerson(String stockSymbol, DAOPerson person) throws PersonServiceException;
+    void addStockToPerson(String stockSymbol, Person person) throws PersonServiceException;
 }

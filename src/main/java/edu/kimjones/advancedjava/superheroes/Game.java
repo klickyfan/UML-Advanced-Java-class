@@ -13,14 +13,14 @@ public class Game {
      */
     public static void main(String[] args) {
 
-        ArrayList<Superpower> javaManSuperpowers = new ArrayList<Superpower>();
+        ArrayList<Superpower> javaManSuperpowers = new ArrayList<>();
         javaManSuperpowers.add(new Invisibility());
         javaManSuperpowers.add(new GreatStrength());
 
-        ArrayList<Superpower> gitTheMightySuperpowers = new ArrayList<Superpower>();
+        ArrayList<Superpower> gitTheMightySuperpowers = new ArrayList<>();
         gitTheMightySuperpowers.add(new ShapeShifting("lion"));
 
-        List<Superhero> heroes = new ArrayList<Superhero>();
+        List<Superhero> heroes = new ArrayList<>();
         heroes.add(new Superhero("Java Man", Gender.Male, javaManSuperpowers, new Sword(),"For UML!"));
         heroes.add(new Superhero("Git the Mighty", Gender.Female, gitTheMightySuperpowers, null,"I've got this!"));
 

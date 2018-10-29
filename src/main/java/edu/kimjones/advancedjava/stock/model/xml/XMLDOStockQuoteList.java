@@ -1,7 +1,9 @@
-package edu.kimjones.advancedjava.stock.model;
+package edu.kimjones.advancedjava.stock.model.xml;
 
-import javax.xml.bind.annotation.*;
-
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -66,7 +68,7 @@ public class XMLDOStockQuoteList implements XMLDomainObject {
      */
     public List<XMLDOStockQuote> getStockQuoteList() {
         if (stock == null) {
-            stock = new ArrayList<XMLDOStockQuote>();
+            stock = new ArrayList<>();
         }
         return this.stock;
     }
