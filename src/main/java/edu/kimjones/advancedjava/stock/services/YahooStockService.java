@@ -6,6 +6,7 @@ import yahoofinance.histquotes.HistoricalQuote;
 import yahoofinance.histquotes.Interval;
 
 import javax.validation.constraints.NotNull;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;

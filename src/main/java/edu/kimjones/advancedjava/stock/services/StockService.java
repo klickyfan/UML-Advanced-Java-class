@@ -30,22 +30,38 @@ public interface StockService {
     @Immutable
     enum StockQuoteInterval {
 
-        HOURLY (Calendar.HOUR, 1, "DATE(time), HOUR(time)"),
-        DAILY (Calendar.DATE, 1, "DATE(time)");
+        HOURLY ("HOURLY", Calendar.HOUR, 1, "DATE(time), HOUR(time)"),
+        DAILY ("DAILY", Calendar.DATE, 1, "DATE(time)"),
+        WEEKLY ("WEEKLY", Calendar.DATE, 7, "WEEK(time)"),
+        MONTHLY ("MONTHLY", Calendar.MONTH, 1, "MONTH(time)");
 
+        private final String string;
         private final int unitsOfInterval; // hours or days
         private final int incrementOfInterval; // number of unitsOfInterval in the interval
         private final String sqlGroupBy;
 
-        StockQuoteInterval(int units, int increment, String sqlGroupBy) {
+        StockQuoteInterval(String string, int units, int increment, String sqlGroupBy) {
+            this.string = string;
             this.unitsOfInterval = units;
             this.incrementOfInterval = increment;
             this.sqlGroupBy = sqlGroupBy;
         }
 
+        public String string() { return string; }
         public int unitsOfInterval() { return unitsOfInterval; }
         public int incrementOfInterval() { return incrementOfInterval; }
         public String sqlGroupBy() { return sqlGroupBy; }
+
+        public static StockQuoteInterval fromString(String intervalString) {
+
+            for (StockQuoteInterval interval : StockQuoteInterval .values()) {
+                if (interval.string.equalsIgnoreCase(intervalString)) {
+                    return interval;
+                }
+            }
+
+            throw new IllegalArgumentException("No interval matching " + intervalString + " was found");
+        }
     }
 
     /**

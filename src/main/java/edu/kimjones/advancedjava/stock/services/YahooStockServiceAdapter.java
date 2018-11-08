@@ -1,14 +1,18 @@
 package edu.kimjones.advancedjava.stock.services;
 
 import edu.kimjones.advancedjava.stock.model.StockQuote;
+
 import yahoofinance.Stock;
 import yahoofinance.histquotes.HistoricalQuote;
 import yahoofinance.histquotes.Interval;
 
 import javax.validation.constraints.NotNull;
+
 import java.io.IOException;
+
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -135,9 +139,17 @@ public class YahooStockServiceAdapter implements StockService {
 
         List<StockQuote> stockQuoteList = new ArrayList<>();
 
+        Interval yahooInterval = getYahooInterval(interval);
+
+        /* when monthly stock quotes are requested, Yahoo Finance bombs unless the from date is the first day of the month */
+        if (yahooInterval == Interval.MONTHLY) {
+            from.add(Calendar.MONTH, 1);
+            from.set(Calendar.DAY_OF_MONTH, 1);
+        }
+
         if (!from.after(until)) { // stop if from is after than until
             try {
-                Interval yahooInterval = getYahooInterval(interval);
+
                 List<HistoricalQuote> historicalQuotes = stockService.getStockQuoteList(symbol, from, until, yahooInterval);
                 for (HistoricalQuote historicalQuote : historicalQuotes) {
                     stockQuoteList.add(new
@@ -182,8 +194,12 @@ public class YahooStockServiceAdapter implements StockService {
 
         if (interval == StockQuoteInterval.DAILY) {
             yahooInterval = Interval.DAILY;
+        } else if (interval == StockQuoteInterval.WEEKLY) {
+            yahooInterval = Interval.WEEKLY;
+        } else if (interval == StockQuoteInterval.MONTHLY) {
+            yahooInterval = Interval.MONTHLY;
         } else {
-            throw new StockServiceException("Yahoo stock service does not support given interval.");
+            throw new StockServiceException("Yahoo stock service does not support the given interval.");
         }
 
         return yahooInterval;

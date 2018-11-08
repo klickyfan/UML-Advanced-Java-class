@@ -9,7 +9,7 @@
         </Console>
 
         <!-- File Appender -->
-        <File name="File" fileName="./java_class.log">
+        <File name="File" fileName="c:\logs\java_class.log">
             <PatternLayout pattern="%d{yyyy-MMM-dd HH:mm:ss a} [%t] %-5level %logger{36} - %msg%n" />
         </File>
 
@@ -17,7 +17,7 @@
 
     <Loggers>
 
-        <Root level="ERROR">
+        <Root level="DEBUG">
             <AppenderRef ref="Console"/>
             <AppenderRef ref="File"/>
         </Root>
