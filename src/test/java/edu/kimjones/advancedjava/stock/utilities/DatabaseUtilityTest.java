@@ -14,7 +14,7 @@ import static org.junit.Assert.*;
 */
 public class DatabaseUtilityTest {
 
-    private final String initializationFile = "./src/main/sql/initialization_test.sql";
+    private static final String INITIALIZATION_FILE = "./src/main/sql/initialization_test.sql";
 
     @Test
     public void testGetConnectionPositive() throws DatabaseConnectionException, SQLException {
@@ -32,7 +32,7 @@ public class DatabaseUtilityTest {
 
     @Test
     public final void testInitializeDatabasePositive() throws DatabaseConnectionException, DatabaseInitializationException, SQLException {
-        DatabaseUtility.initializeDatabase(initializationFile);
+        DatabaseUtility.initializeDatabase(INITIALIZATION_FILE);
         Connection connection = DatabaseUtility.getConnection();
         assertTrue("table test exists", connection.createStatement().execute("select * from test"));
         connection.createStatement().executeUpdate("DROP TABLE test;");
@@ -41,7 +41,7 @@ public class DatabaseUtilityTest {
 
     @Test
     public final void testInitializeDatabaseNegative() throws DatabaseConnectionException, DatabaseInitializationException, SQLException {
-        DatabaseUtility.initializeDatabase(initializationFile);
+        DatabaseUtility.initializeDatabase(INITIALIZATION_FILE);
         Connection connection = DatabaseUtility.getConnection();
 
         try {

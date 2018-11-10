@@ -61,7 +61,7 @@ public class DateOptionHandlerTest {
     @Parameters(method = "parsableOptions")
     public void testDateOptionHandlerPositive(String[] args, Date expected) throws CmdLineException {
         new CmdLineParser(option).parseArgument(args);
-        assertThat(option.date, equalTo(expected));
+        assertThat("date passed equals date expected", option.date, equalTo(expected));
     }
 
     @Test
@@ -70,8 +70,7 @@ public class DateOptionHandlerTest {
         try {
             new CmdLineParser(option).parseArgument(args);
         } catch (CmdLineException e) {
-            System.out.println(check);
-            assertThat(e.getMessage(), check);
+            assertThat("an exception was thrown when the option is not a date", e.getMessage(), check);
         }
     }
 }

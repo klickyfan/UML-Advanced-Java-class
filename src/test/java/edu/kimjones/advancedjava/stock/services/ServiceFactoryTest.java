@@ -1,9 +1,10 @@
 package edu.kimjones.advancedjava.stock.services;
 
-import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * This class tests the ServiceFactory class.
@@ -12,11 +13,11 @@ import static org.junit.Assert.*;
  */
 public class ServiceFactoryTest {
 
-    private StockService stockService;
-    private PersonService personService;
+    private static StockService stockService;
+    private static PersonService personService;
 
-    @Before
-    public void setUp() throws Exception {
+    @BeforeClass
+    public static void setUp() throws Exception {
         stockService = ServiceFactory.getStockService();
         personService = ServiceFactory.getPersonService();
     }

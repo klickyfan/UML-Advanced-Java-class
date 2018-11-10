@@ -14,7 +14,6 @@
     <jdk.version>1.8</jdk.version>
     <slf4j.version>1.7.6</slf4j.version>
     <log4j.version>2.11.1</log4j.version>
-    <spring.version>4.1.1.RELEASE</spring.version>
   </properties>
 
   <build>
@@ -126,7 +125,7 @@
     <dependency>
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>
-      <version>r05</version>
+      <version>27.0-jre</version>
     </dependency>
 
     <!-- logging -->
@@ -190,6 +189,13 @@
     </dependency>
 
     <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter-api</artifactId>
+      <version>5.3.1</version>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
       <groupId>org.xmlunit</groupId>
       <artifactId>xmlunit-core</artifactId>
       <version>2.3.0</version>
@@ -218,9 +224,9 @@
     </dependency>
 
     <dependency>
-      <groupId>org.mockito</groupId>
-      <artifactId>mockito-all</artifactId>
-      <version>1.9.5</version>
+      <groupId>org.seleniumhq.selenium</groupId>
+      <artifactId>selenium-java</artifactId>
+      <version>3.141.5</version>
     </dependency>
 
   </dependencies>

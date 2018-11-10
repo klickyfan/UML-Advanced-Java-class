@@ -9,6 +9,8 @@ import java.sql.Timestamp;
  */
 final public class Person {
 
+    private static final int HASH_CODE_MULTIPLIER = 31;
+
     private final String username;
     private final String firstName;
     private final String lastName;
@@ -71,10 +73,10 @@ final public class Person {
      */
     @Override
     public int hashCode() {
-        int result = (username != null ? username.hashCode() : 31);
-        result = 31 * result + (firstName != null ? firstName.hashCode() : 0);
-        result = 31 * result + (lastName != null ? lastName.hashCode() : 0);
-        result = 31 * result + (birthDate != null ? birthDate.hashCode() : 0);
+        int result = (username != null ? username.hashCode() : HASH_CODE_MULTIPLIER);
+        result = HASH_CODE_MULTIPLIER * result + (firstName != null ? firstName.hashCode() : 0);
+        result = HASH_CODE_MULTIPLIER * result + (lastName != null ? lastName.hashCode() : 0);
+        result = HASH_CODE_MULTIPLIER * result + (birthDate != null ? birthDate.hashCode() : 0);
         return result;
     }
 }

@@ -1,13 +1,17 @@
 package edu.kimjones.advancedjava.stock.services;
 
-import edu.kimjones.advancedjava.stock.model.database.DAOStockQuote;
 import edu.kimjones.advancedjava.stock.model.StockQuote;
+import edu.kimjones.advancedjava.stock.model.database.DAOStockQuote;
 import edu.kimjones.advancedjava.stock.utilities.DatabaseAddOrUpdateException;
 import edu.kimjones.advancedjava.stock.utilities.DatabaseConnectionException;
 import edu.kimjones.advancedjava.stock.utilities.DatabaseUtility;
+
 import org.apache.commons.lang3.time.DateUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.validation.constraints.NotNull;
+
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.sql.*;
@@ -23,6 +27,9 @@ import java.util.List;
  * @author Kim Jones (starting with code obtained from Spencer Marks)
  */
 public class DatabaseStockService implements StockService {
+
+    private static final Logger LOGGER = LogManager.getLogger(DatabaseStockService.class.getName());
+    private static final String TIME_ZONE = "America/New_York";
 
     /**
      * Gets a stock quote (containing the current price) for the company indicated by the given symbol.
@@ -127,14 +134,14 @@ public class DatabaseStockService implements StockService {
             statement.setString(1, symbol);
             statement.setObject(2,
                     date.toInstant()  // convert from legacy class `java.util.Date` (a moment in UTC) to a modern `java.time.Instant` (a moment in UTC).
-                            .atZone(ZoneId.of( "America/New_York" ))  // adjust from UTC to EST
+                            .atZone(ZoneId.of(TIME_ZONE))  // adjust from UTC to EST
                             .toLocalDate());
 
-            //System.out.println(statement.toString());
+            LOGGER.debug(statement.toString());
 
             ResultSet resultSet = statement.executeQuery();
 
-            //System.out.println(resultSet.toString());
+            LOGGER.debug(statement.toString());
 
             if (resultSet.next()) { // if we found a quote...
 
@@ -150,7 +157,7 @@ public class DatabaseStockService implements StockService {
         }
 
         if (stockQuote == null) {
-            String message = String.format("There is no stock data for symbol %s on date %tD %n.", symbol, date);
+            String message = String.format("The database has no stock data for symbol %s on date %tD.", symbol, date);
             throw new StockServiceException(message);
         }
 
@@ -203,10 +210,6 @@ public class DatabaseStockService implements StockService {
         } catch (DatabaseConnectionException | SQLException exception) {
             throw new StockServiceException(exception.getMessage(), exception);
         }
-
-        if (stockQuoteList.isEmpty()) {
-            throw new StockServiceException("There is no stock data for symbol " + symbol);
-        }
     }
 
     /**
@@ -224,8 +227,9 @@ public class DatabaseStockService implements StockService {
         try {
             DAOStockQuote stockQuote = new DAOStockQuote(stockSymbol, stockPrice, dateRecorded);
             DatabaseUtility.addOrUpdate(stockQuote);
-        } catch (DatabaseAddOrUpdateException e) {
-             throw new StockServiceException("Could not add or update stock with symbol " + stockSymbol + ". " + e.getMessage(), e);
+        } catch (DatabaseAddOrUpdateException exception) {
+            String message = String.format("Could not add or update stock with symbol %s.", stockSymbol);
+            throw new StockServiceException(message, exception);
         }
     }
 }

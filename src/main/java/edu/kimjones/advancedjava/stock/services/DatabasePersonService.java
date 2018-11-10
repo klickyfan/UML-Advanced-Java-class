@@ -32,8 +32,8 @@ public class DatabasePersonService implements PersonService {
             for (DAOPerson daoPerson: daoPersonList) {
                 personList.add(new Person(daoPerson.getUsername(), daoPerson.getFirstName(), daoPerson.getLastName(), daoPerson.getBirthDate()));
             }
-        } catch (DatabaseGetListException e) {
-            throw new PersonServiceException("Could not get a list of persons managed by the service.");
+        } catch (DatabaseGetListException exception) {
+            throw new PersonServiceException("Could not get a list of persons managed by the service.", exception);
         }
         return personList;
     }
@@ -55,8 +55,9 @@ public class DatabasePersonService implements PersonService {
             daoPerson.setLastName(person.getLastName());
             daoPerson.setBirthDate(person.getBirthDate());
             DatabaseUtility.addOrUpdate(daoPerson);
-        } catch (DatabaseAddOrUpdateException e) {
-            throw new PersonServiceException("Could not add or update " + person.getFirstName() + " " + person.getLastName() + "." + e.getMessage(), e);
+        } catch (DatabaseAddOrUpdateException exception) {
+            String message = String.format("Could not add or update %s %s.", person.getFirstName(), person.getLastName());
+            throw new PersonServiceException(message, exception);
         }
     }
 
@@ -81,8 +82,9 @@ public class DatabasePersonService implements PersonService {
             for (DAOPersonStock personStock : personStockList) {
                 stocks.add(personStock.getStockSymbol());
             }
-        } catch (DatabaseGetListException e){
-            throw new PersonServiceException("Could not get stocks for " + person.getFirstName() + " " + person.getLastName() + ".");
+        } catch (DatabaseGetListException exception){
+            String message = String.format("Could not get stocks for %s %s.", person.getFirstName(), person.getLastName());
+            throw new PersonServiceException(message, exception);
         }
 
         return stocks;
@@ -107,26 +109,38 @@ public class DatabasePersonService implements PersonService {
 
         try {
             DatabaseUtility.addOrUpdate(personStock);
-        } catch (DatabaseAddOrUpdateException e) {
-            throw new PersonServiceException("Could not add stock with symbol " + stockSymbol + " to " + person.getFirstName() + " " + person.getLastName() + "." + e.getMessage(), e);
+        } catch (DatabaseAddOrUpdateException exception) {
+            String message = String.format("Could not add stock with symbol %s to %s %s.", stockSymbol, person.getFirstName(), person.getLastName());
+            throw new PersonServiceException(message, exception);
         }
     }
 
+    /**
+     * Returns the {@code DAOPerson} that is assoiated with the give {@code Person}, that is, the one with the same
+     * username.
+     *
+     * @param person                    a {@code Person}
+     * @return                          a {@code DAOPerson}
+     * @throws PersonServiceException   if a service can not read or write the requested data or otherwise perform the
+     *                                  requested operation
+     */
     private DAOPerson getDAOPerson(Person person) throws PersonServiceException {
 
         List<DAOPerson> daoPersonList = null;
-        DAOPerson daoPerson = null;
 
         try {
             daoPersonList = DatabaseUtility.getListBy("username", person.getUsername(), DAOPerson.class);
-        } catch (DatabaseGetListException e) {
-            throw new PersonServiceException("Could not find person with username " + person.getUsername());
+        } catch (DatabaseGetListException exception) {
+            String message = String.format("Could not find person with username %s.", person.getUsername());
+            throw new PersonServiceException(message, exception);
         }
 
         if (daoPersonList == null || daoPersonList.isEmpty()) {
-            throw new PersonServiceException("Could not find person with username " + person.getUsername());
+            String message = String.format("Could not find person with username %s.", person.getUsername());
+            throw new PersonServiceException(message);
         }
 
+        /// there should only be 1 in the list
         return daoPersonList.get(0);
     }
 }

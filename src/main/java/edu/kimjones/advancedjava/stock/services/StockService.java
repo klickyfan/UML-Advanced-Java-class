@@ -4,6 +4,7 @@ import edu.kimjones.advancedjava.stock.model.StockQuote;
 
 import javax.annotation.concurrent.Immutable;
 import javax.validation.constraints.NotNull;
+
 import java.math.BigDecimal;
 import java.util.Calendar;
 import java.util.Date;
@@ -60,7 +61,7 @@ public interface StockService {
                 }
             }
 
-            throw new IllegalArgumentException("No interval matching " + intervalString + " was found");
+            throw new IllegalArgumentException("No interval matching " + intervalString + " was found.");
         }
     }
 

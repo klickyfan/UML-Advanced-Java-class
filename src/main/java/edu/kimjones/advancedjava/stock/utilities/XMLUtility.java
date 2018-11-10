@@ -32,8 +32,8 @@ public class XMLUtility {
         try {
             Unmarshaller unmarshaller = createUnmarshaller(tClass);
             returnValue = tClass.cast(unmarshaller.unmarshal(new StringReader(xmlInstance)));
-        } catch (JAXBException e) {
-            throw new InvalidXMLException("JAXBException occurred. " + e.getMessage(), e);
+        } catch (JAXBException exception) {
+            throw new InvalidXMLException("JAXBException occurred. " + exception.getMessage(), exception);
         }
         return returnValue;
     }
@@ -53,8 +53,8 @@ public class XMLUtility {
            marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
            marshaller.marshal(domainClass, byteArrayOutputStream);
            return byteArrayOutputStream.toString();
-       } catch (JAXBException e) {
-           throw new InvalidXMLException("JAXBException occurred. " + e.getMessage(), e);
+       } catch (JAXBException exception) {
+           throw new InvalidXMLException("JAXBException occurred. " + exception.getMessage(), exception);
        }
     }
 

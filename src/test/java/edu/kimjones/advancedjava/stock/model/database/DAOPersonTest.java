@@ -2,7 +2,7 @@ package edu.kimjones.advancedjava.stock.model.database;
 
 import nl.jqno.equalsverifier.EqualsVerifier;
 
-import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.sql.Timestamp;
@@ -17,47 +17,47 @@ import static org.junit.Assert.*;
  */
 public class DAOPersonTest {
 
-    private static final Calendar birthDayCalendar = Calendar.getInstance();
+    private static final Calendar BIRTH_DAY_CALENDAR = Calendar.getInstance();
 
     static {
-        birthDayCalendar.set(1990, Calendar.JANUARY, 12);
+        BIRTH_DAY_CALENDAR.set(1990, Calendar.JANUARY, 12);
     }
 
     // these are public to allow them to be used by DAOPersonStockTest
-    public static final int id = 10;
-    public static final String username = "smarks";
-    public static final String firstName = "Spencer";
-    public static final String lastName = "Marks";
-    public static final Timestamp birthDate = Timestamp.valueOf("1990-01-12 00:00:00.00");
+    public static final int ID = 10;
+    public static final String USERNAME = "smarks";
+    public static final String FIRST_NAME = "Spencer";
+    public static final String LAST_NAME = "Marks";
+    public static final Timestamp BIRTH_DATE = Timestamp.valueOf("1990-01-12 00:00:00.00");
 
-    private DAOPerson person;
+    private static DAOPerson person;
 
-    @Before
-    public void setUp() {
-        this.person = new DAOPerson();
-        this.person.setId(id);
-        this.person.setUsername(username);
-        this.person.setFirstName(firstName);
-        this.person.setLastName(lastName);
-        this.person.setBirthDate(birthDate);
+    @BeforeClass
+    public static void setUp() {
+        person = new DAOPerson();
+        person.setId(ID);
+        person.setUsername(USERNAME);
+        person.setFirstName(FIRST_NAME);
+        person.setLastName(LAST_NAME);
+        person.setBirthDate(BIRTH_DATE);
     }
 
     @Test
     public void testPersonGettersAndSettersPositive() {
-        assertEquals("id matches", id, this.person.getId());
-        assertEquals("username matches", username, this.person.getUsername());
-        assertEquals("first name matches", firstName, this.person.getFirstName());
-        assertEquals("last name matches", lastName, this.person.getLastName());
-        assertEquals("birthday matches", birthDate, this.person.getBirthDate());
+        assertEquals("ID matches", ID, person.getId());
+        assertEquals("USERNAME matches", USERNAME, person.getUsername());
+        assertEquals("first name matches", FIRST_NAME, person.getFirstName());
+        assertEquals("last name matches", LAST_NAME, person.getLastName());
+        assertEquals("birthday matches", BIRTH_DATE, person.getBirthDate());
     }
 
     @Test
     public void testPersonGettersAndSettersNegative() {
-        assertNotEquals("id does not match", 20, this.person.getId());
-        assertNotSame("username does not match", "kjones", this.person.getUsername());
-        assertNotSame("first name does not match", "Kim", this.person.getFirstName());
-        assertNotSame("last name does not match", "Jones", this.person.getLastName());
-        assertNotSame("birthday des not match", Timestamp.valueOf("2018-10-01 00:00:00.00"), this.person.getBirthDate());
+        assertNotEquals("ID does not match", 20, person.getId());
+        assertNotSame("USERNAME does not match", "kjones", person.getUsername());
+        assertNotSame("first name does not match", "Kim", person.getFirstName());
+        assertNotSame("last name does not match", "Jones", person.getLastName());
+        assertNotSame("birthday des not match", Timestamp.valueOf("2018-10-01 00:00:00.00"), person.getBirthDate());
     }
 
     @Test

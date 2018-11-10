@@ -3,39 +3,56 @@
 
     <Appenders>
 
-        <!-- Console Appender -->
-        <Console name="Console" target="SYSTEM_OUT">
+        <Console name="info_console" target="SYSTEM_OUT">
             <PatternLayout pattern="%d{yyyy-MMM-dd HH:mm:ss a} [%t] %-5level %logger{36} - %msg%n" />
+            <Filters>
+                <ThresholdFilter level="WARN" onMatch="DENY" onMismatch="ACCEPT" />
+            </Filters>
         </Console>
 
-        <!-- File Appender -->
-        <File name="File" fileName="c:\logs\java_class.log">
+        <Console name="error_console" target="SYSTEM_ERR">
             <PatternLayout pattern="%d{yyyy-MMM-dd HH:mm:ss a} [%t] %-5level %logger{36} - %msg%n" />
-        </File>
+            <Filters>
+                <ThresholdFilter level="WARN" onMatch="ACCEPT" />
+            </Filters>
+        </Console>
+
+        <RollingFile name="info_file" fileName="c:\logs\java\info.log" filePattern="info-%i.log.gz">
+            <PatternLayout pattern="%d{yyyy-MMM-dd HH:mm:ss a} [%t] %-5level %logger{36} - %msg%n" />
+            <Policies>
+                <SizeBasedTriggeringPolicy size="10 MB"/>
+            </Policies>
+            <DefaultRolloverStrategy max="2" compressionLevel="4"/>
+            <Filters>
+                <ThresholdFilter level="INFO" onMatch="ACCEPT" />
+            </Filters>
+        </RollingFile>
+
+        <RollingFile name="error_file" fileName="c:\logs\java\error.log" filePattern="error-%i.log.gz">
+            <PatternLayout pattern="%d{yyyy-MMM-dd HH:mm:ss a} [%t] %-5level %logger{36} - %msg%n" />
+            <Policies>
+                <SizeBasedTriggeringPolicy size="10 MB"/>
+            </Policies>
+            <DefaultRolloverStrategy max="2" compressionLevel="4"/>
+            <Filters>
+                <ThresholdFilter level="WARN" onMatch="ACCEPT" />
+            </Filters>
+        </RollingFile>
 
     </Appenders>
 
     <Loggers>
 
-        <Root level="DEBUG">
-            <AppenderRef ref="Console"/>
-            <AppenderRef ref="File"/>
+        <!-- fatal < error < warn < info < debug < trace < all -->
+
+        <Root level="trace">
+            <AppenderRef ref="info_file"/>
+            <AppenderRef ref="error_file"/>
+            <AppenderRef ref="error_console"/>
         </Root>
 
-        <!-- Log everything in hibernate -->
-        <Logger name="org.hibernate" level="ERROR">
-            <AppenderRef ref="File" />
-        </Logger>
-
-        <!-- Log SQL statements -->
-        <Logger name="org.hibernate.SQL" level="ERROR">
-            <AppenderRef ref="Console" />
-            <AppenderRef ref="File" />
-        </Logger>
-
-        <!-- Log JDBC bind parameters -->
-        <Logger name="org.hibernate.type.descriptor.sql" level="ERROR">
-            <AppenderRef ref="File" />
+        <Logger name="edu.kimjones" level="debug" additivity="false">
+            <AppenderRef ref="info_console"/>
         </Logger>
 
     </Loggers>

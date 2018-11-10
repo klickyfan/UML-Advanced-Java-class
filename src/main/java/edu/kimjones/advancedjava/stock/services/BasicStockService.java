@@ -172,7 +172,5 @@ public class BasicStockService implements StockService {
 
         throw new UnsupportedOperationException();
     }
-
-
 }
 

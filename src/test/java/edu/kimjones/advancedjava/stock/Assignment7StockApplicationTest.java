@@ -33,7 +33,7 @@ public class Assignment7StockApplicationTest {
     }
 
     @Test
-    public void testWhenCorrectArgumentSupplied() throws Exception {
+    public void testPositive() throws Exception {
         Assignment7StockApplication.main(null);
         assertTrue("application runs normally", bytes.toString().isEmpty());
     }

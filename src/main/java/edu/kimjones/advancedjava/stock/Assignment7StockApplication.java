@@ -1,16 +1,18 @@
 package edu.kimjones.advancedjava.stock;
 
 import com.google.common.io.CharStreams;
+
 import edu.kimjones.advancedjava.stock.model.StockQuote;
 import edu.kimjones.advancedjava.stock.model.xml.XMLDOStockQuote;
 import edu.kimjones.advancedjava.stock.model.xml.XMLDOStockQuoteList;
-import edu.kimjones.advancedjava.stock.services.DatabaseStockService;
+import edu.kimjones.advancedjava.stock.services.ServiceFactory;
 import edu.kimjones.advancedjava.stock.services.StockService;
 import edu.kimjones.advancedjava.stock.services.StockServiceException;
 import edu.kimjones.advancedjava.stock.utilities.DatabaseInitializationException;
 import edu.kimjones.advancedjava.stock.utilities.DatabaseUtility;
 import edu.kimjones.advancedjava.stock.utilities.InvalidXMLException;
 import edu.kimjones.advancedjava.stock.utilities.XMLUtility;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -45,13 +47,13 @@ public class Assignment7StockApplication {
         System.out.println(stockQuoteList.toString());
 
         // prepare database
-        DatabaseUtility.initializeDatabase(DatabaseUtility.initializationFile);
+        DatabaseUtility.initializeDatabase(DatabaseUtility.INITIALIZATION_FILE);
 
         /*
-         this application was created to test the DatabaseStockService, so do not get a stock service from the
-         ServiceFactory
+         this application was created to test the DatabaseStockService, so ask the ServiceFactory for the
+         database stock service
          */
-        StockService stockService = new DatabaseStockService();
+        StockService stockService = ServiceFactory.getStockService(ServiceFactory.ServiceType.DATABASE);
 
         // put stocks from xml into database
         addStocksToDatabase(stockService, stockQuoteList);

@@ -4,6 +4,7 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -73,9 +74,12 @@ public class XMLDOStockQuoteList implements XMLDomainObject {
         return this.stock;
     }
 
+    /**
+     * @return a {@code String} representation of a {@code XMLDOStockQuoteList} instance
+     */
     @Override
     public String toString() {
-        return "XMLStockQuoteList{" + stock + "%n" +
+        return "XMLDOStockQuoteList{" + stock + "%n" +
                 '}';
     }
 }

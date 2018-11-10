@@ -1,5 +1,8 @@
 package edu.kimjones.advancedjava.superheroes;
 
+import org.junit.BeforeClass;
+import org.junit.Test;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,90 +15,91 @@ import static org.junit.Assert.*;
  */
 public class SuperheroTest {
 
-    private final String name = "Java Man";
-    private final Gender gender = Gender.Male;
-    private final String shape = "lion";
-    private final ArrayList<Superpower> superpowers = new ArrayList<>();
-    private final Weapon weapon = new Sword();
-    private final String warCry = "For UML!";
+    private static final String NAME = "Java Man";
+    private static final Gender GENDER = Gender.Male;
+    private static final String SHAPE = "lion";
+    private static final String WAR_CRY = "For UML!";
+    
+    private static ArrayList<Superpower> superpowers = new ArrayList<>();
+    private static Weapon weapon = new Sword();
 
-    private Superhero superhero;
+    private static Superhero superhero;
 
-    @org.junit.Before
-    public void setUp() {
+    @BeforeClass
+    public static void setUp() {
 
-        this.superpowers.add(new Invisibility());
-        this.superpowers.add(new ShapeShifting(this.shape));
+        superpowers.add(new Invisibility());
+        superpowers.add(new ShapeShifting(SHAPE));
 
-        this.superhero = new Superhero(this.name, this.gender, this.superpowers, this.weapon, this.warCry);
+        superhero = new Superhero(NAME, GENDER, superpowers, weapon, WAR_CRY);
     }
 
-    @org.junit.Test
+    @Test
     public void testNamePositive() {
-        assertEquals("name matches", this.name, this.superhero.getName());
+        assertEquals("NAME matches", NAME, superhero.getName());
     }
 
-    @org.junit.Test
+    @Test
     public void testNameNegative() {
-        assertNotSame("name does not match", "Git the Mighty", superhero.getName());
+        assertNotSame("NAME does not match", "Git the Mighty", superhero.getName());
     }
 
-    @org.junit.Test
+    @Test
     public void testGenderPositive() {
-        assertEquals("gender matches", this.gender, this.superhero.getGender());
+        assertEquals("GENDER matches", GENDER, superhero.getGender());
     }
 
-    @org.junit.Test
+    @Test
     public void testGenderNegative() {
-        assertNotSame("gender does not match", Gender.Female, superhero.getGender());
+        assertNotSame("GENDER does not match", Gender.Female, superhero.getGender());
     }
 
-    @org.junit.Test
+    @Test
     public void testSuperpowersPositive() {
 
-        List<Superpower> superpowers = this.superhero.getSuperpowers();
+        List<Superpower> superpowers = superhero.getSuperpowers();
         assertEquals("there are two superpowers", superpowers.size(), 2);
 
         Superpower superpower0 = superpowers.get(0);
         assertEquals("superpower 0 is invisibility", superpower0.getClass(), Invisibility.class);
 
         Superpower superpower1 = superpowers.get(1);
-        assertEquals("superpower 0 is shape shifting", superpower1.getClass(), ShapeShifting.class);
+        assertEquals("superpower 0 is SHAPE shifting", superpower1.getClass(), ShapeShifting.class);
 
-        assertEquals("shape matches", this.shape, ((ShapeShifting) superpower1).getShape());
+        assertEquals("SHAPE matches", SHAPE, ((ShapeShifting) superpower1).getShape());
     }
 
-    @org.junit.Test
+    @Test
     public void testSuperpowersNegative() {
 
-        List<Superpower> superpowers = this.superhero.getSuperpowers();
+        List<Superpower> superpowers = superhero.getSuperpowers();
         assertNotEquals("there is one superpower", 1, superpowers.size());
 
         Superpower superpower0 = superpowers.get(0);
-        assertNotSame("superpower 0 is shape shifting", superpower0.getClass(), ShapeShifting.class);
+        assertNotSame("superpower 0 is SHAPE shifting", superpower0.getClass(), ShapeShifting.class);
 
         Superpower superpower1 = superpowers.get(1);
         assertNotSame("superpower 0 is invisibility", superpower1.getClass(), Invisibility.class);
 
-        assertNotSame("shape does not match", "bear", ((ShapeShifting) superpower1).getShape());
+        assertNotSame("SHAPE does not match", "bear", ((ShapeShifting) superpower1).getShape());
     }
 
-    @org.junit.Test
+    @Test
     public void testWeaponPositive() {
-        assertEquals("weapon matches", this.weapon, superhero.getWeapon());
+        assertEquals("weapon matches", weapon, superhero.getWeapon());
     }
 
-    @org.junit.Test
+    @Test
     public void testWeaponNegative() {
         assertNotSame("weapon does not match", new Fist(), superhero.getWeapon());
     }
 
-    @org.junit.Test
+    @Test
     public void testWarCryPositive() {
-        assertEquals("war cry match", this.warCry, superhero.getWarCry());
+        assertEquals("war cry match", WAR_CRY, superhero.getWarCry());
     }
 
-    @org.junit.Test
+    @Test
     public void testWarCryNegative() {
         assertNotSame("war cry does not match", "Attack!", superhero.getWarCry());
     }

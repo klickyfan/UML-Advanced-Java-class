@@ -103,9 +103,12 @@ final public class XMLDOStockQuote implements XMLDomainObject {
         this.time = value;
     }
 
+    /**
+     * @return a {@code String} representation of a {@code XMLDOStockQuote} instance
+     */
     @Override
     public String toString() {
-        return "XMLStockQuote{" +
+        return "XMLDOStockQuote{" +
                 "symbol='" + symbol + '\'' +
                 ", price='" + price + '\'' +
                 ", time='" + time + '\'' +

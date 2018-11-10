@@ -13,6 +13,8 @@ import java.sql.Timestamp;
 @Table(name="person")
 final public class DAOPerson implements DatabaseAccessObject {
 
+    private static final int HASH_CODE_MULTIPLIER = 31;
+
     private int id;
     private String username;
     private String firstName;
@@ -157,13 +159,16 @@ final public class DAOPerson implements DatabaseAccessObject {
     @Override
     public int hashCode() {
         int result = id;
-        result = 31 * result + (username != null ? username.hashCode() : 0);
-        result = 31 * result + (firstName != null ? firstName.hashCode() : 0);
-        result = 31 * result + (lastName != null ? lastName.hashCode() : 0);
-        result = 31 * result + (birthDate != null ? birthDate.hashCode() : 0);
+        result = HASH_CODE_MULTIPLIER * result + (username != null ? username.hashCode() : 0);
+        result = HASH_CODE_MULTIPLIER * result + (firstName != null ? firstName.hashCode() : 0);
+        result = HASH_CODE_MULTIPLIER * result + (lastName != null ? lastName.hashCode() : 0);
+        result = HASH_CODE_MULTIPLIER * result + (birthDate != null ? birthDate.hashCode() : 0);
         return result;
     }
 
+    /**
+     * @return a {@code String} representation of a {@code DAOPerson} instance
+     */
     @Override
     public String toString() {
         return "DAOPerson{" +

@@ -1,6 +1,7 @@
 package edu.kimjones.advancedjava.stock;
 
 import edu.kimjones.advancedjava.stock.utilities.DatabaseInitializationException;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -46,7 +47,7 @@ public class StockQuoteApplicationTest {
     }
 
     @Test
-    public void testWhenArgumentsSupplied() throws DatabaseInitializationException {
+    public void testWhenInvalidArgumentsSupplied() throws DatabaseInitializationException {
         StockQuoteApplication.main(new String[]{"a", "b", "c", "d", "e", "f"});
         assertTrue("application properly handles invalid argument", bytes.toString().contains("No argument is allowed: a"));
     }
