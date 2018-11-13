@@ -1,14 +1,11 @@
 package edu.kimjones.advancedjava.stock.services;
 
-import edu.kimjones.advancedjava.stock.model.DAOPerson;
-import edu.kimjones.advancedjava.stock.model.DAOPersonStock;
+import edu.kimjones.advancedjava.stock.model.database.DAOPerson;
+import edu.kimjones.advancedjava.stock.model.Person;
+import edu.kimjones.advancedjava.stock.model.database.DAOPersonStock;
+import edu.kimjones.advancedjava.stock.utilities.DatabaseAddOrUpdateException;
+import edu.kimjones.advancedjava.stock.utilities.DatabaseGetListException;
 import edu.kimjones.advancedjava.stock.utilities.DatabaseUtility;
-
-import org.hibernate.Criteria;
-import org.hibernate.HibernateException;
-import org.hibernate.Session;
-import org.hibernate.Transaction;
-import org.hibernate.criterion.Restrictions;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,28 +25,17 @@ public class DatabasePersonService implements PersonService {
      *                                  requested operation
      */
     @Override
-    @SuppressWarnings("unchecked") // used to suppress warnings from criteria.list
-    public List<DAOPerson> getPersonList() throws PersonServiceException {
-
-        Session session = DatabaseUtility.getSessionFactory().openSession();
-        List<DAOPerson> returnValue;
-        Transaction transaction = null;
+    public List<Person> getPersonList() throws PersonServiceException {
+         List<Person> personList = new ArrayList<>();
         try {
-            transaction = session.beginTransaction();
-            Criteria criteria = session.createCriteria(DAOPerson.class);
-            returnValue = criteria.list();
-        } catch (HibernateException e) {
-            if (transaction != null && transaction.isActive()) {
-                transaction.rollback();  // close transaction
+            List<DAOPerson> daoPersonList = DatabaseUtility.getListBy("", null, DAOPerson.class);
+            for (DAOPerson daoPerson: daoPersonList) {
+                personList.add(new Person(daoPerson.getUsername(), daoPerson.getFirstName(), daoPerson.getLastName(), daoPerson.getBirthDate()));
             }
-            throw new PersonServiceException("Could not get DAOPerson data. " + e.getMessage(), e);
-        } finally {
-            if (transaction != null && transaction.isActive()) {
-                transaction.commit();
-            }
+        } catch (DatabaseGetListException e) {
+            throw new PersonServiceException("Could not get a list of persons managed by the service.");
         }
-
-        return returnValue;
+        return personList;
     }
 
     /**
@@ -61,23 +47,16 @@ public class DatabasePersonService implements PersonService {
      *                                  requested operation
      */
     @Override
-    public void addOrUpdatePerson(DAOPerson person) throws PersonServiceException {
-
-        Session session = DatabaseUtility.getSessionFactory().openSession();
-        Transaction transaction = null;
+    public void addOrUpdatePerson(Person person) throws PersonServiceException {
         try {
-            transaction = session.beginTransaction();
-            session.saveOrUpdate(person);
-            transaction.commit();
-        } catch (HibernateException e) {
-            if (transaction != null && transaction.isActive()) {
-                transaction.rollback();  // close transaction
-            }
-            throw new PersonServiceException("Could not add or update DAOPerson. " + e.getMessage(), e);
-        } finally {
-            if (transaction != null && transaction.isActive()) {
-                transaction.commit();
-            }
+            DAOPerson daoPerson = new DAOPerson();
+            daoPerson.setUsername(person.getUsername());
+            daoPerson.setFirstName(person.getFirstName());
+            daoPerson.setLastName(person.getLastName());
+            daoPerson.setBirthDate(person.getBirthDate());
+            DatabaseUtility.addOrUpdate(daoPerson);
+        } catch (DatabaseAddOrUpdateException e) {
+            throw new PersonServiceException("Could not add or update " + person.getFirstName() + " " + person.getLastName() + "." + e.getMessage(), e);
         }
     }
 
@@ -91,31 +70,21 @@ public class DatabasePersonService implements PersonService {
      */
     @Override
     @SuppressWarnings("unchecked") // used to suppress warnings from criteria.list
-    public List<String> getStocks(DAOPerson person) throws PersonServiceException {
+    public List<String> getStockList(Person person) throws PersonServiceException {
 
-        Session session =  DatabaseUtility.getSessionFactory().openSession();
-        Transaction transaction = null;
         List<String> stocks = new ArrayList<>();
-        try {
-            transaction = session.beginTransaction();
-            Criteria criteria = session.createCriteria(DAOPersonStock.class);
-            criteria.add(Restrictions.eq("person", person));
 
-            List<DAOPersonStock> list = criteria.list();
-            for (DAOPersonStock personStock : list) {
+        try {
+            DAOPerson daoPerson = getDAOPerson(person);
+
+            List<DAOPersonStock> personStockList = DatabaseUtility.getListBy("person", daoPerson, DAOPersonStock.class);
+            for (DAOPersonStock personStock : personStockList) {
                 stocks.add(personStock.getStockSymbol());
             }
-            transaction.commit();
-        } catch (HibernateException e) {
-            if (transaction != null && transaction.isActive()) {
-                transaction.rollback();  // close transaction
-            }
-            throw new PersonServiceException("Could not get stocks for DAOPPerson. " + e.getMessage(), e);
-        } finally {
-            if (transaction != null && transaction.isActive()) {
-                transaction.commit();
-            }
+        } catch (DatabaseGetListException e){
+            throw new PersonServiceException("Could not get stocks for " + person.getFirstName() + " " + person.getLastName() + ".");
         }
+
         return stocks;
     }
 
@@ -128,26 +97,36 @@ public class DatabasePersonService implements PersonService {
      *                                  requested operation
      */
     @Override
-    public void addStockToPerson(String stockSymbol, DAOPerson person) throws PersonServiceException {
+    public void addStockToPerson(String stockSymbol, Person person) throws PersonServiceException {
 
-        Session session =  DatabaseUtility.getSessionFactory().openSession();
-        Transaction transaction = null;
+        DAOPerson daoPerson = getDAOPerson(person);
+
+        DAOPersonStock personStock = new DAOPersonStock();
+        personStock.setStockSymbol(stockSymbol);
+        personStock.setPerson(daoPerson);
+
         try {
-            transaction = session.beginTransaction();
-            DAOPersonStock personStock = new DAOPersonStock();
-            personStock.setStockSymbol(stockSymbol);
-            personStock.setPerson(person);
-            session.saveOrUpdate(personStock);
-            transaction.commit();
-        } catch (HibernateException e) {
-            if (transaction != null && transaction.isActive()) {
-                transaction.rollback();  // close transaction
-            }
-            throw new PersonServiceException("Could not link stock to DAOPerson. " + e.getMessage(), e);
-        } finally {
-            if (transaction != null && transaction.isActive()) {
-                transaction.commit();
-            }
+            DatabaseUtility.addOrUpdate(personStock);
+        } catch (DatabaseAddOrUpdateException e) {
+            throw new PersonServiceException("Could not add stock with symbol " + stockSymbol + " to " + person.getFirstName() + " " + person.getLastName() + "." + e.getMessage(), e);
         }
+    }
+
+    private DAOPerson getDAOPerson(Person person) throws PersonServiceException {
+
+        List<DAOPerson> daoPersonList = null;
+        DAOPerson daoPerson = null;
+
+        try {
+            daoPersonList = DatabaseUtility.getListBy("username", person.getUsername(), DAOPerson.class);
+        } catch (DatabaseGetListException e) {
+            throw new PersonServiceException("Could not find person with username " + person.getUsername());
+        }
+
+        if (daoPersonList == null || daoPersonList.isEmpty()) {
+            throw new PersonServiceException("Could not find person with username " + person.getUsername());
+        }
+
+        return daoPersonList.get(0);
     }
 }

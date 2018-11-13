@@ -1,10 +1,6 @@
-package edu.kimjones.advancedjava.stock.model;
+package edu.kimjones.advancedjava.stock.model.database;
 
-import javax.persistence.Basic;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 import java.sql.Timestamp;
 
@@ -18,6 +14,7 @@ import java.sql.Timestamp;
 final public class DAOPerson implements DatabaseAccessObject {
 
     private int id;
+    private String username;
     private String firstName;
     private String lastName;
     private Timestamp birthDate;
@@ -47,6 +44,25 @@ final public class DAOPerson implements DatabaseAccessObject {
     public void setId(int id) {
         this.id = id;
     }
+
+    /**
+     * @return the person's username
+     */
+    @Basic
+    @Column(name = "username", nullable = false, length = 256)
+    public String getUsername() {
+        return username;
+    }
+
+    /**
+     * Sets the person's username.
+     *
+     * @param username a String value
+     */
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
 
     /**
      * @return the person's first name
@@ -108,19 +124,31 @@ final public class DAOPerson implements DatabaseAccessObject {
      */
     @Override
     public boolean equals(Object obj) {
-        if (obj == this) return true;
+        if (obj == this) {
+            return true;
+        }
 
-        if (!(obj instanceof DAOPerson)) return false;
+        if (!(obj instanceof DAOPerson)) {
+            return false;
+        }
 
         DAOPerson rhs = (DAOPerson) obj;
 
-        if (id != rhs.id) return false;
+        if (id != rhs.id) {
+            return false;
+        }
 
-        if (birthDate != null ? !birthDate.equals(rhs.birthDate) : rhs.birthDate != null)
+        if (username != null ? !username.equals(rhs.username) : rhs.username != null) {
             return false;
-        if (firstName != null ? !firstName.equals(rhs.firstName) : rhs.firstName != null)
+        }
+        if (firstName != null ? !firstName.equals(rhs.firstName) : rhs.firstName != null) {
             return false;
-        return lastName != null ? lastName.equals(rhs.lastName) : rhs.lastName == null;
+        }
+        if (lastName != null ? !lastName.equals(rhs.lastName) : rhs.lastName != null) {
+            return false;
+        }
+
+         return birthDate != null ? birthDate.equals(rhs.birthDate) : rhs.birthDate == null;
     }
 
     /**
@@ -129,6 +157,7 @@ final public class DAOPerson implements DatabaseAccessObject {
     @Override
     public int hashCode() {
         int result = id;
+        result = 31 * result + (username != null ? username.hashCode() : 0);
         result = 31 * result + (firstName != null ? firstName.hashCode() : 0);
         result = 31 * result + (lastName != null ? lastName.hashCode() : 0);
         result = 31 * result + (birthDate != null ? birthDate.hashCode() : 0);
@@ -139,9 +168,11 @@ final public class DAOPerson implements DatabaseAccessObject {
     public String toString() {
         return "DAOPerson{" +
                 "id=" + id +
+                ", username='" + username + '\'' +
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
                 ", birthDate=" + birthDate +
                 '}';
     }
+
 }

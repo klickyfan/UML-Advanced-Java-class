@@ -1,12 +1,6 @@
-package edu.kimjones.advancedjava.stock.model;
+package edu.kimjones.advancedjava.stock.model.database;
 
-import javax.persistence.Basic;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 /**
  * This class models a database table that links a person with the stocks they are interested in.
@@ -99,14 +93,22 @@ final public class DAOPersonStock implements DatabaseAccessObject {
      */
     @Override
     public boolean equals(Object obj) {
-        if (obj == this) return true;
+        if (obj == this) {
+            return true;
+        }
 
-        if (!(obj instanceof DAOPersonStock)) return false;
+        if (!(obj instanceof DAOPersonStock)) {
+            return false;
+        }
 
         DAOPersonStock rhs = (DAOPersonStock) obj;
 
-        if (id != rhs.id) return false;
-        if (person != null ? !person.equals(rhs.person) : rhs.person != null) return false;
+        if (id != rhs.id) {
+            return false;
+        }
+        if (person != null ? !person.equals(rhs.person) : rhs.person != null) {
+            return false;
+        }
         return stockSymbol != null ? stockSymbol.equals(rhs.stockSymbol) : rhs.stockSymbol == null;
     }
 
@@ -118,7 +120,6 @@ final public class DAOPersonStock implements DatabaseAccessObject {
         int result = id;
         result = 31 * result + (person != null ? person.hashCode() : 0);
         result = 31 * result + (stockSymbol != null ? stockSymbol.hashCode() : 0);
-
         return result;
     }
 

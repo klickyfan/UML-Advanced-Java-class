@@ -9,7 +9,7 @@ import java.util.Objects;
  */
 public final class ShapeShifting implements Superpower {
 
-    private String shape;
+    private final String shape;
 
     /**
      * This constructor creates a new ShapeShifting superpower.

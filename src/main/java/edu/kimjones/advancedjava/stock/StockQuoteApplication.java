@@ -1,12 +1,13 @@
 package edu.kimjones.advancedjava.stock;
 
-import edu.kimjones.advancedjava.stock.model.DAOStockQuote;
+import edu.kimjones.advancedjava.stock.model.StockQuote;
 import edu.kimjones.advancedjava.stock.services.ServiceFactory;
 import edu.kimjones.advancedjava.stock.services.StockService;
 import edu.kimjones.advancedjava.stock.services.StockServiceException;
 import edu.kimjones.advancedjava.stock.utilities.DatabaseInitializationException;
 import edu.kimjones.advancedjava.stock.utilities.DatabaseUtility;
 import edu.kimjones.advancedjava.stock.utilities.DateOptionHandler;
+
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
@@ -137,34 +138,28 @@ public class StockQuoteApplication {
     }
 
     private void getLatestStockQuote(StockService stockService) throws StockServiceException {
-        DAOStockQuote latestQuote = stockService.getLatestStockQuote(symbol);
-
+        StockQuote latestQuote = stockService.getLatestStockQuote(symbol);
         System.out.printf("%nThe latest price of stock %s is %.2f %n", symbol, latestQuote.getStockPrice());
     }
 
     private void getDatedStockQuote(StockService stockService) throws StockServiceException {
-        DAOStockQuote quoteOnDate = stockService.getStockQuote(symbol, fromDate);
-
+        StockQuote quoteOnDate = stockService.getStockQuote(symbol, fromDate);
         System.out.printf("%nThe price of stock %s on date %tD is %.2f %n", symbol, quoteOnDate.getDateRecorded(), quoteOnDate.getStockPrice());
     }
 
     private void getStockQuoteList(StockService stockService) throws StockServiceException {
-        List<DAOStockQuote> dailyQuoteList = stockService.getStockQuoteList(symbol, calFromDate, calUntilDate);
-
+        List<StockQuote> dailyQuoteList = stockService.getStockQuoteList(symbol, calFromDate, calUntilDate);
         System.out.printf("%n");
-
-        for (DAOStockQuote temp : dailyQuoteList) {
+        for (StockQuote temp : dailyQuoteList) {
             System.out.printf("The price of stock %s on date %tD is %.2f %n", temp.getStockSymbol(), temp.getDateRecorded(), temp.getStockPrice());
         }
     }
 
     private void getStockQuoteListOnInterval(StockService stockService) throws StockServiceException {
         StockService.StockQuoteInterval interval = StockService.StockQuoteInterval.HOURLY;
-        List<DAOStockQuote> hourlyQuoteList = stockService.getStockQuoteList(symbol, calFromDate, calUntilDate, interval);
-
+        List<StockQuote> hourlyQuoteList = stockService.getStockQuoteList(symbol, calFromDate, calUntilDate, interval);
         System.out.printf("%n");
-
-        for (DAOStockQuote temp : hourlyQuoteList) {
+        for (StockQuote temp : hourlyQuoteList) {
             System.out.printf("The price of stock %s at time %tD %tR is %.2f %n", temp.getStockSymbol(), temp.getDateRecorded(), temp.getDateRecorded(), temp.getStockPrice());
         }
     }

@@ -9,13 +9,13 @@ import java.util.Objects;
  *
  * @author Kim Jones
  */
-public class Superhero {
+final public class Superhero {
 
-    private String name;
-    private Gender gender;
-    private List<Superpower> superpowers;
-    private Weapon weapon;
-    private String warCry;
+    private final String name;
+    private final Gender gender;
+    private final List<Superpower> superpowers;
+    private final Weapon weapon;
+    private final String warCry;
 
     /**
      * This constructor creates a new superhero.
@@ -33,7 +33,7 @@ public class Superhero {
         this.gender = Objects.requireNonNull(gender, "gender cannot be null");
 
         // make copy of superpowers list
-        this.superpowers = new ArrayList<Superpower>(superpowers);
+        this.superpowers = new ArrayList<>(superpowers);
 
         if (weapon == null) {
             this.weapon = new Fist();
@@ -65,7 +65,7 @@ public class Superhero {
      */
     public List<Superpower> getSuperpowers()
     {
-        return new ArrayList<Superpower>(this.superpowers);
+        return new ArrayList<>(this.superpowers);
     }
 
     /**

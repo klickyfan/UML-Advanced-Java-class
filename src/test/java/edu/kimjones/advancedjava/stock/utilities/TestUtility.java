@@ -16,7 +16,6 @@ public class TestUtility {
      * @throws ParseException   if the string given is not of the form "mm/dd/yyyy"
      */
     public static Calendar parseDateString(String dateString) throws ParseException {
-
         SimpleDateFormat formatter = new SimpleDateFormat("MM/dd/yyyy");
         Date date = formatter.parse(dateString);
         Calendar cal = Calendar.getInstance();
@@ -31,7 +30,6 @@ public class TestUtility {
      *  @return                 date object with the specified number of hours added to it
      */
     public static Date addHoursToDate(int hours, Date beforeDate){
-
         final long ONE_MINUTE_IN_MILLISECONDS = 60000; // milliseconds
 
         long currentTimeInMs = beforeDate.getTime();

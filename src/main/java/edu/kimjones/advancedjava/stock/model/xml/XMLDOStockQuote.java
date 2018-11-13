@@ -1,4 +1,4 @@
-package edu.kimjones.advancedjava.stock.model;
+package edu.kimjones.advancedjava.stock.model.xml;
 
 import javax.xml.bind.annotation.*;
 
@@ -28,7 +28,7 @@ import javax.xml.bind.annotation.*;
 @XmlType(name = "", propOrder = {
         "content"
 })
-public class XMLDOStockQuote implements XMLDomainObject {
+final public class XMLDOStockQuote implements XMLDomainObject {
 
     @XmlValue
     protected String content;

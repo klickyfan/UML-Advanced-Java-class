@@ -1,4 +1,4 @@
-package edu.kimjones.advancedjava.stock.model;
+package edu.kimjones.advancedjava.stock.model.database;
 
 import nl.jqno.equalsverifier.EqualsVerifier;
 
@@ -24,6 +24,7 @@ public class DAOPersonStockTest {
     public void setUp() {
         this.person = new DAOPerson();
         this.person.setId(DAOPersonTest.id);
+        this.person.setUsername(DAOPersonTest.username);
         this.person.setFirstName(DAOPersonTest.firstName);
         this.person.setLastName(DAOPersonTest.lastName);
         this.person.setBirthDate(DAOPersonTest.birthDate);

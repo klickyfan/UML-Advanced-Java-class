@@ -15,7 +15,7 @@ public class SuperheroTest {
     private final String name = "Java Man";
     private final Gender gender = Gender.Male;
     private final String shape = "lion";
-    private final ArrayList<Superpower> superpowers = new ArrayList<Superpower>();
+    private final ArrayList<Superpower> superpowers = new ArrayList<>();
     private final Weapon weapon = new Sword();
     private final String warCry = "For UML!";
 

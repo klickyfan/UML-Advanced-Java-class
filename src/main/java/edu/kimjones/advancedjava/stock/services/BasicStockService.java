@@ -1,6 +1,6 @@
 package edu.kimjones.advancedjava.stock.services;
 
-import edu.kimjones.advancedjava.stock.model.DAOStockQuote;
+import edu.kimjones.advancedjava.stock.model.StockQuote;
 
 import javax.validation.constraints.NotNull;
 
@@ -22,18 +22,18 @@ public class BasicStockService implements StockService {
      * Gets a stock quote (containing the current price) for the company indicated by the given symbol.
      *
      * @param symbol                    a stock symbol of a company, e.g. "APPL" for Apple
-     * @return                          an instance of {@code DAOStockQuote} (containing the current price) for the
+     * @return                          an instance of {@code StockQuote} (containing the current price) for the
      *                                  company with the given symbol
      * @throws StockServiceException    if an exception occurs when trying to get the quote
      */
     @Override
-    public DAOStockQuote getLatestStockQuote(@NotNull String symbol) throws StockServiceException {
+    public StockQuote getLatestStockQuote(@NotNull String symbol) throws StockServiceException {
 
         BigDecimal price = BigDecimal.valueOf(100.0); // fake price (for now)
 
         Calendar cal = Calendar.getInstance();
 
-        return new DAOStockQuote(symbol, price, cal.getTime());
+        return new StockQuote(symbol, price, cal.getTime());
     }
 
     /**
@@ -42,16 +42,16 @@ public class BasicStockService implements StockService {
      *
      * @param symbol                    a stock symbol of a company, e.g. "APPL" for Apple
      * @param date                      a date
-     * @return                          instance of <CODE>DAOStockQuote</CODE>(containing the current price) for the
+     * @return                          instance of {@code StockQuote} (containing the current price) for the
      *                                  company with the given symbol on the given date
      * @throws StockServiceException    if an exception occurs when trying to get the quote
      */
     @Override
-    public DAOStockQuote getStockQuote(@NotNull String symbol, @NotNull Date date) throws StockServiceException {
+    public StockQuote getStockQuote(@NotNull String symbol, @NotNull Date date) throws StockServiceException {
 
         BigDecimal price = BigDecimal.valueOf(100.0); // fake price (for now)
 
-        return new DAOStockQuote(symbol, price, date);
+        return new StockQuote(symbol, price, date);
     }
 
     /**
@@ -66,9 +66,9 @@ public class BasicStockService implements StockService {
      * @throws StockServiceException    if an exception occurs when trying to get the quote
      */
     @Override
-    public List<DAOStockQuote> getStockQuoteList(@NotNull String symbol, @NotNull Calendar from, @NotNull Calendar until) throws StockServiceException {
+    public List<StockQuote> getStockQuoteList(@NotNull String symbol, @NotNull Calendar from, @NotNull Calendar until) throws StockServiceException {
 
-        List<DAOStockQuote> stockQuoteList = new ArrayList<DAOStockQuote>();
+        List<StockQuote> stockQuoteList = new ArrayList<>();
 
         if (!from.after(until)) { // stop if from is after than until
             constructStockQuoteList(stockQuoteList, symbol, from, until, StockQuoteInterval.DAILY);
@@ -91,9 +91,9 @@ public class BasicStockService implements StockService {
      * @throws StockServiceException    if an exception occurs when trying to get the quote
      */
     @Override
-    public List<DAOStockQuote> getStockQuoteList(@NotNull String symbol, @NotNull Calendar from, @NotNull Calendar until, @NotNull StockQuoteInterval interval) throws StockServiceException {
+    public List<StockQuote> getStockQuoteList(@NotNull String symbol, @NotNull Calendar from, @NotNull Calendar until, @NotNull StockQuoteInterval interval) throws StockServiceException {
 
-        List<DAOStockQuote> stockQuoteList = new ArrayList<DAOStockQuote>();
+        List<StockQuote> stockQuoteList = new ArrayList<>();
 
         if (!from.after(until)) { // stop if from is after than until
             constructStockQuoteList(stockQuoteList, symbol, from, until, interval);
@@ -103,7 +103,7 @@ public class BasicStockService implements StockService {
     }
 
     /**
-     * Does the work needed by {@code}List<DAOStockQuote>getStockQuote(...} to construct a list of {@code DAOStockQuote}
+     * Does the work needed by {@code}List<StockQuote>getStockQuote(...} to construct a list of {@code StockQuote}
      * instances for a company with the given symbol, in the given date range and on the given interval.
      *
      * @param stockQuoteList    the list we are building out
@@ -113,7 +113,7 @@ public class BasicStockService implements StockService {
      * @param interval          the interval between which stock quotes should be obtained, i.e. if DAILY, then one per day
      */
     private void constructStockQuoteList(
-            @NotNull List<DAOStockQuote> stockQuoteList,
+            @NotNull List<StockQuote> stockQuoteList,
             @NotNull String symbol,
             @NotNull Calendar from,
             @NotNull Calendar until,
@@ -140,7 +140,7 @@ public class BasicStockService implements StockService {
             BigDecimal price = startingPrice.add(new BigDecimal(valueToAddToStartingPrice));
 
             // create quote with symbol, fake price, and date
-            DAOStockQuote quote = new DAOStockQuote(symbol, price, date);
+            StockQuote quote = new StockQuote(symbol, price, date);
 
             // add quote to list
             stockQuoteList.add(quote);
@@ -169,6 +169,8 @@ public class BasicStockService implements StockService {
            actually manage a list of stocks, but rather creates a fake list when asked for one, this method is
            left unimplemented.
          */
+
+        throw new UnsupportedOperationException();
     }
 
 

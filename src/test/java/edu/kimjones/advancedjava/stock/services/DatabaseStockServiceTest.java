@@ -1,6 +1,7 @@
 package edu.kimjones.advancedjava.stock.services;
 
-import edu.kimjones.advancedjava.stock.model.DAOStockQuote;
+import edu.kimjones.advancedjava.stock.model.database.DAOStockQuote;
+import edu.kimjones.advancedjava.stock.model.StockQuote;
 import edu.kimjones.advancedjava.stock.utilities.DatabaseUtility;
 
 import org.junit.After;
@@ -9,9 +10,7 @@ import org.junit.Test;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-
 import java.text.SimpleDateFormat;
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -20,6 +19,7 @@ import static edu.kimjones.advancedjava.stock.utilities.TestUtility.parseDateStr
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
+
 import static org.junit.Assert.*;
 
 /**
@@ -31,28 +31,27 @@ public class DatabaseStockServiceTest {
 
     private StockService stockService;
 
-    private DAOStockQuote databaseQuoteNow;
-    private DAOStockQuote databaseQuoteOnDate;
+    private StockQuote databaseQuoteNow;
+    private StockQuote databaseQuoteOnDate;
 
     private final BigDecimal latestStockPriceExpected = BigDecimal.valueOf(84.61).setScale(2, RoundingMode.HALF_UP);
     private final BigDecimal stockPriceExpected = BigDecimal.valueOf(82.35).setScale(2, RoundingMode.HALF_UP);
     private final BigDecimal stockPriceNotExpected = BigDecimal.valueOf(1.0).setScale(2, RoundingMode.HALF_UP);
 
-    private List<DAOStockQuote> databaseHourlyStockQuoteList;
-    private DAOStockQuote databaseHourlyStockQuoteListFirstItemExpected;
-    private DAOStockQuote databaseHourlyStockQuoteListSecondItemExpected;
-    private DAOStockQuote databaseHourlyStockQuoteListLastItemExpected;
+    private List<StockQuote> databaseHourlyStockQuoteList;
+    private StockQuote databaseHourlyStockQuoteListFirstItemExpected;
+    private StockQuote databaseHourlyStockQuoteListSecondItemExpected;
+    private StockQuote databaseHourlyStockQuoteListLastItemExpected;
 
-    private List<DAOStockQuote> databaseDailyStockQuoteList;
-    private List<DAOStockQuote> databaseDailyStockQuoteListExpected = new ArrayList<DAOStockQuote>();
+    private List<StockQuote> databaseDailyStockQuoteList;
+    private List<StockQuote> databaseDailyStockQuoteListExpected = new ArrayList<>();
 
     @Before
     public void setUp() throws Exception {
-
         DatabaseUtility.initializeDatabase(DatabaseUtility.initializationFile);
         DatabaseUtility.initializeDatabase("./src/main/sql/add_stock_service_test_data.sql");
 
-        this.stockService = ServiceFactory.getStockService();
+        this.stockService = new DatabaseStockService();
 
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         Date stockDate = dateFormat.parse("2018-10-09 00:00");
@@ -74,17 +73,17 @@ public class DatabaseStockServiceTest {
                 stockService.getStockQuoteList(stockSymbol, parseDateString("9/20/2018"), parseDateString("9/21/2018"), StockService.StockQuoteInterval.HOURLY);
 
         this.databaseHourlyStockQuoteListFirstItemExpected =
-                new DAOStockQuote(
+                new StockQuote(
                         stockSymbol,
                         new BigDecimal(118.88).setScale(2, RoundingMode.HALF_UP), // see add_stock_service_test_data.sql
                         dateFormat.parse("2018-09-20 10:00"));
         this.databaseHourlyStockQuoteListSecondItemExpected =
-                new DAOStockQuote(
+                new StockQuote(
                         stockSymbol,
                         new BigDecimal(117.58).setScale(2, RoundingMode.HALF_UP),
                         dateFormat.parse("2018-09-20 11:00"));
         this.databaseHourlyStockQuoteListLastItemExpected =
-                new DAOStockQuote(
+                new StockQuote(
                         stockSymbol,
                         new BigDecimal(118.55).setScale(2, RoundingMode.HALF_UP),
                         dateFormat.parse("2018-09-20 16:00"));
@@ -96,17 +95,17 @@ public class DatabaseStockServiceTest {
         this.databaseDailyStockQuoteList = stockService.getStockQuoteList(stockSymbol, parseDateString("10/1/2018"), parseDateString("10/3/2018"), StockService.StockQuoteInterval.DAILY);
 
         this.databaseDailyStockQuoteListExpected.add(
-                new DAOStockQuote(
+                new StockQuote(
                         stockSymbol,
                         new BigDecimal(84.46).setScale(2, RoundingMode.HALF_UP),
                         dateFormat.parse("2018-10-01 00:00")));
         this.databaseDailyStockQuoteListExpected.add(
-                new DAOStockQuote(
+                new StockQuote(
                         stockSymbol,
                         new BigDecimal(82.77).setScale(2, RoundingMode.HALF_UP),
                         dateFormat.parse("2018-10-02 00:00")));
         this.databaseDailyStockQuoteListExpected.add(
-                new DAOStockQuote(
+                new StockQuote(
                         stockSymbol,
                         new BigDecimal(83.91).setScale(2, RoundingMode.HALF_UP),
                         dateFormat.parse("2018-10-03 00:00")));
@@ -165,7 +164,6 @@ public class DatabaseStockServiceTest {
 
     @Test
     public void testAddOrUpdateStockQuote() throws Exception {
-
         String symbol = "DIS";
         BigDecimal price = new BigDecimal(100.00).setScale(2, RoundingMode.HALF_UP);
 
@@ -173,15 +171,15 @@ public class DatabaseStockServiceTest {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         date = dateFormat.parse("2018-10-22 12:00:00");
 
-        DAOStockQuote testStockQuote = new DAOStockQuote(symbol, price, date);
+        StockQuote testStockQuote = new StockQuote(symbol, price, date);
 
         stockService.addOrUpdateStockQuote(symbol, price, date);
 
-        List<DAOStockQuote> stockQuoteList =
+        List<StockQuote> stockQuoteList =
                 stockService.getStockQuoteList(symbol, parseDateString("10/22/2018"), parseDateString("10/23/2018"), StockService.StockQuoteInterval.DAILY);
 
         boolean found = false;
-        for (DAOStockQuote stockQuote : stockQuoteList) {
+        for (StockQuote stockQuote : stockQuoteList) {
             if (stockQuote.equals(testStockQuote)) {
                 found = true;
                 break;

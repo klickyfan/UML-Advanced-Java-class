@@ -1,4 +1,4 @@
-package edu.kimjones.advancedjava.stock.model;
+package edu.kimjones.advancedjava.stock.model.database;
 
 import nl.jqno.equalsverifier.EqualsVerifier;
 
@@ -25,6 +25,7 @@ public class DAOPersonTest {
 
     // these are public to allow them to be used by DAOPersonStockTest
     public static final int id = 10;
+    public static final String username = "smarks";
     public static final String firstName = "Spencer";
     public static final String lastName = "Marks";
     public static final Timestamp birthDate = Timestamp.valueOf("1990-01-12 00:00:00.00");
@@ -35,6 +36,7 @@ public class DAOPersonTest {
     public void setUp() {
         this.person = new DAOPerson();
         this.person.setId(id);
+        this.person.setUsername(username);
         this.person.setFirstName(firstName);
         this.person.setLastName(lastName);
         this.person.setBirthDate(birthDate);
@@ -43,6 +45,7 @@ public class DAOPersonTest {
     @Test
     public void testPersonGettersAndSettersPositive() {
         assertEquals("id matches", id, this.person.getId());
+        assertEquals("username matches", username, this.person.getUsername());
         assertEquals("first name matches", firstName, this.person.getFirstName());
         assertEquals("last name matches", lastName, this.person.getLastName());
         assertEquals("birthday matches", birthDate, this.person.getBirthDate());
@@ -51,6 +54,7 @@ public class DAOPersonTest {
     @Test
     public void testPersonGettersAndSettersNegative() {
         assertNotEquals("id does not match", 20, this.person.getId());
+        assertNotSame("username does not match", "kjones", this.person.getUsername());
         assertNotSame("first name does not match", "Kim", this.person.getFirstName());
         assertNotSame("last name does not match", "Jones", this.person.getLastName());
         assertNotSame("birthday des not match", Timestamp.valueOf("2018-10-01 00:00:00.00"), this.person.getBirthDate());

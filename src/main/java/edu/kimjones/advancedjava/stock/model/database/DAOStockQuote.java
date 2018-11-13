@@ -1,4 +1,4 @@
-package edu.kimjones.advancedjava.stock.model;
+package edu.kimjones.advancedjava.stock.model.database;
 
 import javax.persistence.*;
 
@@ -16,7 +16,7 @@ import java.util.Objects;
  */
 @Entity
 @Table(name = "quotes")
-final public class DAOStockQuote {
+final public class DAOStockQuote implements DatabaseAccessObject {
 
     private int id;
     private String stockSymbol;
@@ -124,26 +124,32 @@ final public class DAOStockQuote {
     @Override
     public boolean equals(Object obj) {
 
-        if (obj == this) return true;
+        if (obj == this) {
+            return true;
+        }
 
-        if (!(obj instanceof DAOStockQuote)) return false;
+        if (!(obj instanceof DAOStockQuote)) {
+            return false;
+        }
 
         DAOStockQuote rhs = (DAOStockQuote) obj;
 
-        if (stockPrice == null && rhs.stockPrice != null)
+        if (stockPrice == null && rhs.stockPrice != null) {
             return false;
+        }
 
-        if (stockPrice != null && rhs.stockPrice == null)
+        if (stockPrice != null && rhs.stockPrice == null) {
             return false;
+        }
 
         // Note use of compareTo to compare BigDecimal stockPrices. We have to use this instead of equals because two
         // equals may be false for mathematically equivalent BigDecimals due to scaling.
         boolean test0 = (id == rhs.id);
         boolean test1 = Objects.equals(stockSymbol, rhs.stockSymbol);
         boolean test2 = (stockPrice == null && rhs.stockPrice == null) || (stockPrice.compareTo(rhs.stockPrice) == 0);
-        boolean test4 = Objects.equals(dateRecorded, rhs.dateRecorded);
+        boolean test3 = Objects.equals(dateRecorded, rhs.dateRecorded);
 
-        return test0 && test1 && test2 && test4;
+        return test0 && test1 && test2 && test3;
     }
 
     /**
@@ -154,9 +160,10 @@ final public class DAOStockQuote {
 
         // Note conversion of BigDecimal stockPrice to double. We have to do this because two mathematically equivalent
         // BigDecimals could product different hash codes due to scaling.
-        if (stockPrice != null)
+        if (stockPrice != null) {
             return Objects.hash(id, stockSymbol, stockPrice.doubleValue(), dateRecorded);
-        else
+        } else {
             return Objects.hash(id, stockSymbol, dateRecorded);
+        }
     }
 }

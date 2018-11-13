@@ -1,6 +1,6 @@
 package edu.kimjones.advancedjava.stock.utilities;
 
-import edu.kimjones.advancedjava.stock.model.XMLDomainObject;
+import edu.kimjones.advancedjava.stock.model.xml.XMLDomainObject;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;

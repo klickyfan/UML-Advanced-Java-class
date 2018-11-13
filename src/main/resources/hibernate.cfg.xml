@@ -10,16 +10,16 @@
         <property name="hibernate.connection.driver_class">com.mysql.jdbc.Driver</property>
         <property name="hibernate.connection.url">jdbc:mysql://localhost:3306/stocks?useSSL=false</property>
         <property name="hibernate.connection.username">monty</property>
-        <property name="hibernate.connection.password">m0nty</property>
+        <property name="hibernate.connection.password">some_pass</property>
         <property name="hibernate.connection.pool_size">12</property>
 
         <property name="hibernate.show_sql">false</property>
 
         <property name="hibernate.dialect">org.hibernate.dialect.MySQLDialect</property>
 
-        <mapping class="edu.kimjones.advancedjava.stock.model.DAOPerson"/>
-        <mapping class="edu.kimjones.advancedjava.stock.model.DAOPersonStock"/>
-        <mapping class="edu.kimjones.advancedjava.stock.model.DAOStockQuote"/>
+        <mapping class="edu.kimjones.advancedjava.stock.model.database.DAOPerson"/>
+        <mapping class="edu.kimjones.advancedjava.stock.model.database.DAOPersonStock"/>
+        <mapping class="edu.kimjones.advancedjava.stock.model.database.DAOStockQuote"/>
 
     </session-factory>
 
