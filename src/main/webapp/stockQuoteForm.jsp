@@ -9,7 +9,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Stock Quote Application</title>
+    <title>Stock Quote Application: Home</title>
 
     <link rel="stylesheet" href="https://unpkg.com/purecss@1.0.0/build/pure-min.css" integrity="sha384-nn4HPE8lTHyVtfCBi5yW9d20FjT8BJwUXyWZT9InLYax14RDjBj46LmSztkmNP9w" crossorigin="anonymous">
 
@@ -67,6 +67,26 @@
                     Until
                 </label>
                 <input id="until" name="until"  type="date" value="2018-10-12"/>
+            </div>
+
+            <br>
+
+            <div class="pure-control-group">
+
+                <label class="label-head">
+                    From the Yahoo or the database?
+                </label>
+
+                <label for="yahoo-radio">
+                    <input id="yahoo-radio" name="service" type="radio" value="yahoo" checked />
+                    Yahoo
+                </label>
+
+                <label for="database-radio">
+                    <input id="database-radio" name="service" type="radio" value="database" />
+                    the database
+                </label>
+
             </div>
 
             <br>

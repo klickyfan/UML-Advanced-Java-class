@@ -10,6 +10,9 @@ import javax.persistence.*;
 @Entity
 @Table(name = "person_stock")
 final public class DAOPersonStock implements DatabaseAccessObject {
+
+    private static final int HASH_CODE_MULTIPLIER = 31;
+
     private int id;
     private DAOPerson person;
     private String stockSymbol;
@@ -118,11 +121,14 @@ final public class DAOPersonStock implements DatabaseAccessObject {
     @Override
     public int hashCode() {
         int result = id;
-        result = 31 * result + (person != null ? person.hashCode() : 0);
-        result = 31 * result + (stockSymbol != null ? stockSymbol.hashCode() : 0);
+        result = HASH_CODE_MULTIPLIER * result + (person != null ? person.hashCode() : 0);
+        result = HASH_CODE_MULTIPLIER * result + (stockSymbol != null ? stockSymbol.hashCode() : 0);
         return result;
     }
 
+    /**
+     * @return a {@code String} representation of a {@code DAOPersonStock} instance
+     */
     @Override
     public String toString() {
         return "DAOPersonStock{" +

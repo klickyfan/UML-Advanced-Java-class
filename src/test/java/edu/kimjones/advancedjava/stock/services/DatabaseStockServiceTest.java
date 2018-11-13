@@ -1,11 +1,11 @@
 package edu.kimjones.advancedjava.stock.services;
 
-import edu.kimjones.advancedjava.stock.model.database.DAOStockQuote;
 import edu.kimjones.advancedjava.stock.model.StockQuote;
+import edu.kimjones.advancedjava.stock.model.database.DAOStockQuote;
 import edu.kimjones.advancedjava.stock.utilities.DatabaseUtility;
 
-import org.junit.After;
-import org.junit.Before;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.math.BigDecimal;
@@ -16,10 +16,8 @@ import java.util.Date;
 import java.util.List;
 
 import static edu.kimjones.advancedjava.stock.utilities.TestUtility.parseDateString;
-
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
-
 import static org.junit.Assert.*;
 
 /**
@@ -29,29 +27,30 @@ import static org.junit.Assert.*;
  */
 public class DatabaseStockServiceTest {
 
-    private StockService stockService;
+    private static final BigDecimal LATEST_STOCK_PRICE_EXPECTED = BigDecimal.valueOf(84.61).setScale(2, RoundingMode.HALF_UP);
+    private static final BigDecimal STOCK_PRICE_EXPECTED = BigDecimal.valueOf(82.35).setScale(2, RoundingMode.HALF_UP);
+    private static final BigDecimal STOCK_PRICE_NOT_EXPECTED = BigDecimal.valueOf(1.0).setScale(2, RoundingMode.HALF_UP);
 
-    private StockQuote databaseQuoteNow;
-    private StockQuote databaseQuoteOnDate;
+    private static StockService stockService;
 
-    private final BigDecimal latestStockPriceExpected = BigDecimal.valueOf(84.61).setScale(2, RoundingMode.HALF_UP);
-    private final BigDecimal stockPriceExpected = BigDecimal.valueOf(82.35).setScale(2, RoundingMode.HALF_UP);
-    private final BigDecimal stockPriceNotExpected = BigDecimal.valueOf(1.0).setScale(2, RoundingMode.HALF_UP);
+    private static StockQuote databaseQuoteNow;
+    private static StockQuote databaseQuoteOnDate;
+    
+    private static List<StockQuote> databaseHourlyStockQuoteList;
+    private static StockQuote databaseHourlyStockQuoteListFirstItemExpected;
+    private static StockQuote databaseHourlyStockQuoteListSecondItemExpected;
+    private static StockQuote databaseHourlyStockQuoteListLastItemExpected;
 
-    private List<StockQuote> databaseHourlyStockQuoteList;
-    private StockQuote databaseHourlyStockQuoteListFirstItemExpected;
-    private StockQuote databaseHourlyStockQuoteListSecondItemExpected;
-    private StockQuote databaseHourlyStockQuoteListLastItemExpected;
+    private static List<StockQuote> databaseDailyStockQuoteList;
+    private static ArrayList<StockQuote> databaseDailyStockQuoteListExpected = new ArrayList<>();
 
-    private List<StockQuote> databaseDailyStockQuoteList;
-    private List<StockQuote> databaseDailyStockQuoteListExpected = new ArrayList<>();
+    @BeforeClass
+    public static void setUp() throws Exception {
 
-    @Before
-    public void setUp() throws Exception {
-        DatabaseUtility.initializeDatabase(DatabaseUtility.initializationFile);
+        DatabaseUtility.initializeDatabase(DatabaseUtility.INITIALIZATION_FILE);
         DatabaseUtility.initializeDatabase("./src/main/sql/add_stock_service_test_data.sql");
 
-        this.stockService = new DatabaseStockService();
+        stockService = new DatabaseStockService();
 
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         Date stockDate = dateFormat.parse("2018-10-09 00:00");
@@ -62,27 +61,27 @@ public class DatabaseStockServiceTest {
 
         // this is an untaken stock symbol
         String stockSymbol = "OOOO";
-        this.databaseQuoteNow = stockService.getLatestStockQuote(stockSymbol);
-        this.databaseQuoteOnDate = stockService.getStockQuote(stockSymbol, stockDate);
+        databaseQuoteNow = stockService.getLatestStockQuote(stockSymbol);
+        databaseQuoteOnDate = stockService.getStockQuote(stockSymbol, stockDate);
 
         /*
           prepare to test getStockQuoteList on hour interval
          */
 
-        this.databaseHourlyStockQuoteList =
+        databaseHourlyStockQuoteList =
                 stockService.getStockQuoteList(stockSymbol, parseDateString("9/20/2018"), parseDateString("9/21/2018"), StockService.StockQuoteInterval.HOURLY);
 
-        this.databaseHourlyStockQuoteListFirstItemExpected =
+        databaseHourlyStockQuoteListFirstItemExpected =
                 new StockQuote(
                         stockSymbol,
                         new BigDecimal(118.88).setScale(2, RoundingMode.HALF_UP), // see add_stock_service_test_data.sql
                         dateFormat.parse("2018-09-20 10:00"));
-        this.databaseHourlyStockQuoteListSecondItemExpected =
+        databaseHourlyStockQuoteListSecondItemExpected =
                 new StockQuote(
                         stockSymbol,
                         new BigDecimal(117.58).setScale(2, RoundingMode.HALF_UP),
                         dateFormat.parse("2018-09-20 11:00"));
-        this.databaseHourlyStockQuoteListLastItemExpected =
+        databaseHourlyStockQuoteListLastItemExpected =
                 new StockQuote(
                         stockSymbol,
                         new BigDecimal(118.55).setScale(2, RoundingMode.HALF_UP),
@@ -92,74 +91,73 @@ public class DatabaseStockServiceTest {
           prepare to test getStockQuoteList on daily interval
          */
 
-        this.databaseDailyStockQuoteList = stockService.getStockQuoteList(stockSymbol, parseDateString("10/1/2018"), parseDateString("10/3/2018"), StockService.StockQuoteInterval.DAILY);
+        databaseDailyStockQuoteList = stockService.getStockQuoteList(stockSymbol, parseDateString("10/1/2018"), parseDateString("10/3/2018"), StockService.StockQuoteInterval.DAILY);
 
-        this.databaseDailyStockQuoteListExpected.add(
+        databaseDailyStockQuoteListExpected.add(
                 new StockQuote(
                         stockSymbol,
                         new BigDecimal(84.46).setScale(2, RoundingMode.HALF_UP),
                         dateFormat.parse("2018-10-01 00:00")));
-        this.databaseDailyStockQuoteListExpected.add(
+        databaseDailyStockQuoteListExpected.add(
                 new StockQuote(
                         stockSymbol,
                         new BigDecimal(82.77).setScale(2, RoundingMode.HALF_UP),
                         dateFormat.parse("2018-10-02 00:00")));
-        this.databaseDailyStockQuoteListExpected.add(
+        databaseDailyStockQuoteListExpected.add(
                 new StockQuote(
                         stockSymbol,
                         new BigDecimal(83.91).setScale(2, RoundingMode.HALF_UP),
                         dateFormat.parse("2018-10-03 00:00")));
     }
 
-    @After
-    public void tearDown() throws Exception {
-        DatabaseUtility.initializeDatabase(DatabaseUtility.initializationFile);
+    @AfterClass
+    public static void tearDown() throws Exception {
+        DatabaseUtility.initializeDatabase(DatabaseUtility.INITIALIZATION_FILE);
     }
 
     @Test
     public void testGetLatestStockQuotePositive() {
-        assertEquals("price is " + this.latestStockPriceExpected, this.latestStockPriceExpected, this.databaseQuoteNow.getStockPrice());
+        assertEquals("price is " + LATEST_STOCK_PRICE_EXPECTED, LATEST_STOCK_PRICE_EXPECTED, databaseQuoteNow.getStockPrice());
     }
 
     @Test
     public void testGetLatestStockQuoteNegative() {
-        assertNotSame("price is not " + this.latestStockPriceExpected, this.stockPriceNotExpected, this.databaseQuoteNow.getStockPrice());
+        assertNotSame("price is not " + LATEST_STOCK_PRICE_EXPECTED, STOCK_PRICE_NOT_EXPECTED, databaseQuoteNow.getStockPrice());
     }
 
     @Test
     public void testGetStockQuoteWithDatePositive() {
-        // Note to Spencer Marks: I am still having a problem with this one test. It works locally, but not in circleci.
-        //assertEquals("price is " + this.stockPriceExpected, this.stockPriceExpected, this.databaseQuoteOnDate.getStockPrice());
+       assertEquals("price is " + STOCK_PRICE_EXPECTED, STOCK_PRICE_EXPECTED, databaseQuoteOnDate.getStockPrice());
     }
 
     @Test
     public void testGetStockQuoteWithDateNegative() {
-        assertNotSame("price is not " + this.stockPriceExpected, this.stockPriceNotExpected, this.databaseQuoteOnDate.getStockPrice());
+        assertNotSame("price is not " + STOCK_PRICE_EXPECTED, STOCK_PRICE_NOT_EXPECTED, databaseQuoteOnDate.getStockPrice());
     }
 
     @Test
     public void testGetHourlyStockQuotesPositive() {
-        assertEquals("stock quote obtained equals stock quote expected", this.databaseHourlyStockQuoteList.get(0), this.databaseHourlyStockQuoteListFirstItemExpected);
-        assertEquals("second stock quote obtained equals stock quote expected", this.databaseHourlyStockQuoteList.get(1), this.databaseHourlyStockQuoteListSecondItemExpected);
-        assertEquals("last stock quote obtained equals stock quote expected", this.databaseHourlyStockQuoteList.get(6), this.databaseHourlyStockQuoteListLastItemExpected);
+        assertEquals("stock quote obtained equals stock quote expected", databaseHourlyStockQuoteList.get(0), databaseHourlyStockQuoteListFirstItemExpected);
+        assertEquals("second stock quote obtained equals stock quote expected", databaseHourlyStockQuoteList.get(1), databaseHourlyStockQuoteListSecondItemExpected);
+        assertEquals("last stock quote obtained equals stock quote expected", databaseHourlyStockQuoteList.get(6), databaseHourlyStockQuoteListLastItemExpected);
 
-        assertEquals("quote list has 7 items", this.databaseHourlyStockQuoteList.size(), 7);
+        assertEquals("quote list has 7 items", databaseHourlyStockQuoteList.size(), 7);
     }
 
     @Test
     public void testGetHourlyStockQuotesNegative() {
-        assertThat("stock quote list obtained does not equal empty stock quote list ", this.databaseHourlyStockQuoteList, is(not(new ArrayList<DAOStockQuote>())));
-        assertThat("first stock quote obtained does not equal tenth stock quote expected", this.databaseHourlyStockQuoteList.get(0), is(not(this.databaseHourlyStockQuoteListSecondItemExpected)));
+        assertThat("stock quote list obtained does not equal empty stock quote list ", databaseHourlyStockQuoteList, is(not(new ArrayList<DAOStockQuote>())));
+        assertThat("first stock quote obtained does not equal tenth stock quote expected", databaseHourlyStockQuoteList.get(0), is(not(databaseHourlyStockQuoteListSecondItemExpected)));
     }
 
     @Test
     public void testGetDailyStockQuotePositive() {
-        assertThat("stock quote list obtained equals stock quote list expected", this.databaseDailyStockQuoteList, is(this.databaseDailyStockQuoteListExpected));
+        assertThat("stock quote list obtained equals stock quote list expected", databaseDailyStockQuoteList, is(databaseDailyStockQuoteListExpected));
     }
 
     @Test
     public void testGetDailyStockQuotesNegative() {
-        assertThat("stock quote list obtained does not equal empty stock quote list ", this.databaseDailyStockQuoteList, is(not(new ArrayList<DAOStockQuote>())));
+        assertThat("stock quote list obtained does not equal empty stock quote list ", databaseDailyStockQuoteList, is(not(new ArrayList<DAOStockQuote>())));
     }
 
     @Test

@@ -48,6 +48,7 @@ public class FakeHttpSession implements HttpSession {
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     public HttpSessionContext getSessionContext() {
         return null;
     }

@@ -38,7 +38,7 @@ public class PersonTest {
 
     @Test
     public void testPersonGettersAndSettersPositive() {
-        assertEquals("username matches", username, this.person.getUsername());
+        assertEquals("USERNAME matches", username, this.person.getUsername());
         assertEquals("first name matches", firstName, this.person.getFirstName());
         assertEquals("last name matches", lastName, this.person.getLastName());
         assertEquals("birthday matches", birthDate, this.person.getBirthDate());
@@ -46,7 +46,7 @@ public class PersonTest {
 
     @Test
     public void testPersonGettersAndSettersNegative() {
-        assertNotSame("username does not match", "kjones", this.person.getUsername());
+        assertNotSame("USERNAME does not match", "kjones", this.person.getUsername());
         assertNotSame("first name does not match", "Kim", this.person.getFirstName());
         assertNotSame("last name does not match", "Jones", this.person.getLastName());
         assertNotSame("birthday des not match", Timestamp.valueOf("2018-10-01 00:00:00.00"), this.person.getBirthDate());

@@ -47,8 +47,8 @@ public class YahooStockServiceAdapter implements StockService {
             BigDecimal price = stock.getQuote(true).getPrice();
             Calendar cal = Calendar.getInstance();
             stockQuote = new StockQuote(symbol, price, cal.getTime());
-        } catch (IOException e) {
-            throw new StockServiceException("Could not get latest stock quote for symbol " + symbol + ".");
+        } catch (IOException exception) {
+            throw new StockServiceException("Could not get latest stock quote for symbol " + symbol + ".", exception);
         }
 
         return stockQuote;
@@ -80,8 +80,8 @@ public class YahooStockServiceAdapter implements StockService {
             BigDecimal price = historicalQuotes.get(0).getClose().setScale(2, RoundingMode.HALF_UP);;
 
             stockQuote = new StockQuote(symbol, price, date);
-        } catch (IOException e) {
-            throw new StockServiceException("Could not get stock quote for symbol " + symbol + ".");
+        } catch (IOException exception) {
+            throw new StockServiceException("Could not get stock quote for symbol " + symbol + ".", exception);
         }
 
         return stockQuote;
@@ -113,8 +113,8 @@ public class YahooStockServiceAdapter implements StockService {
                                     historicalQuote.getClose().setScale(2, RoundingMode.HALF_UP),
                                     historicalQuote.getDate().getTime()));
                 }
-            }  catch (IOException e) {
-                throw new StockServiceException("Could not get stock quotes for symbol " + symbol + ".");
+            }  catch (IOException exception) {
+                throw new StockServiceException("Could not get stock quotes for symbol " + symbol + ".", exception);
             }
         }
 
@@ -158,8 +158,8 @@ public class YahooStockServiceAdapter implements StockService {
                                     historicalQuote.getClose().setScale(2, RoundingMode.HALF_UP),
                                     historicalQuote.getDate().getTime()));
                 }
-            }  catch (IOException e) {
-                throw new StockServiceException("Could not get stock quotes for symbol " + symbol + ".");
+            }  catch (IOException exception) {
+                throw new StockServiceException("Could not get stock quotes for symbol " + symbol + ".", exception);
             }
         }
 
@@ -199,7 +199,7 @@ public class YahooStockServiceAdapter implements StockService {
         } else if (interval == StockQuoteInterval.MONTHLY) {
             yahooInterval = Interval.MONTHLY;
         } else {
-            throw new StockServiceException("Yahoo stock service does not support the given interval.");
+            throw new StockServiceException("Yahoo stock service does not support the " + interval.toString() + " interval.");
         }
 
         return yahooInterval;

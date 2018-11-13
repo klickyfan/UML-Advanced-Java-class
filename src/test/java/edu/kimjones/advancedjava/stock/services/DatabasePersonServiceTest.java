@@ -24,17 +24,17 @@ public class DatabasePersonServiceTest {
 
     @Before
     public void setUp() throws Exception {
-        DatabaseUtility.initializeDatabase(DatabaseUtility.initializationFile);
+        DatabaseUtility.initializeDatabase(DatabaseUtility.INITIALIZATION_FILE);
         DatabaseUtility.initializeDatabase("./src/main/sql/add_person_service_test_data.sql");
 
         this.personService = ServiceFactory.getPersonService();
 
-        this.testPerson = new Person(DAOPersonTest.username, DAOPersonTest.firstName, DAOPersonTest.lastName, DAOPersonTest.birthDate);
+        this.testPerson = new Person(DAOPersonTest.USERNAME, DAOPersonTest.FIRST_NAME, DAOPersonTest.LAST_NAME, DAOPersonTest.BIRTH_DATE);
     }
 
     @After
     public void tearDown() throws Exception {
-        DatabaseUtility.initializeDatabase(DatabaseUtility.initializationFile);
+        DatabaseUtility.initializeDatabase(DatabaseUtility.INITIALIZATION_FILE);
     }
 
     @Test

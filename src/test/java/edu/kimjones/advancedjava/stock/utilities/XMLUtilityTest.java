@@ -2,8 +2,10 @@ package edu.kimjones.advancedjava.stock.utilities;
 
 import com.google.common.io.CharStreams;
 import edu.kimjones.advancedjava.stock.model.xml.XMLDOStockQuoteList;
-import org.junit.Before;
+
+import org.junit.BeforeClass;
 import org.junit.Test;
+
 import org.xmlunit.builder.DiffBuilder;
 import org.xmlunit.diff.Diff;
 
@@ -13,16 +15,16 @@ import static org.junit.Assert.*;
 
 public class XMLUtilityTest {
 
-    private static final String xmlFile = "./src/main/xml/stock_info.xml";
+    private static final String XML_FILE = "./src/main/xml/stock_info.xml";
 
-    private String xmlInstanceFromFile;
-    private XMLDOStockQuoteList stockQuoteList;
-    private String xmlInstanceAfterMarshall;
+    private static String xmlInstanceFromFile;
+    private static XMLDOStockQuoteList stockQuoteList;
+    private static String xmlInstanceAfterMarshall;
 
-    @Before
-    public void setUp() throws Exception {
+    @BeforeClass
+    public static void setUp() throws Exception {
 
-        InputStream inputStream = new FileInputStream(new File(xmlFile));
+        InputStream inputStream = new FileInputStream(new File(XML_FILE));
 
         xmlInstanceFromFile = null;
 

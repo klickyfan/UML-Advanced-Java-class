@@ -1,8 +1,10 @@
 package edu.kimjones.advancedjava.stock.utilities;
 
 import com.ibatis.common.jdbc.ScriptRunner;
+
 import edu.kimjones.advancedjava.stock.model.database.DatabaseAccessObject;
 import edu.kimjones.advancedjava.stock.services.DatabasePersonService;
+
 import org.hibernate.*;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.criterion.Restrictions;
@@ -13,9 +15,11 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,7 +32,7 @@ import java.util.List;
  */
 public class DatabaseUtility {
 
-    public static final String initializationFile = "./src/main/sql/create_stocks_database.sql";
+    public static final String INITIALIZATION_FILE = "./src/main/sql/create_stocks_database.sql";
 
     private static SessionFactory sessionFactory; // for use by Hibernate
     private static Configuration configuration; // for use by Hibernate
@@ -75,6 +79,8 @@ public class DatabaseUtility {
     }
 
     /**
+     * Gets a database connection.
+     *
      * @return                                  a database connection
      * @throws DatabaseConnectionException      if a connection to the database cannot be established
      */
@@ -90,8 +96,8 @@ public class DatabaseUtility {
             String password = configuration.getProperty(DATABASE_PASSWORD);
 
             connection = DriverManager.getConnection(databaseUrl, username, password);
-        } catch (ClassNotFoundException | SQLException e) {
-            throw new DatabaseConnectionException("Could not connect to database. " + e.getMessage(), e);
+        } catch (ClassNotFoundException | SQLException exception) {
+            throw new DatabaseConnectionException("Could not connect to database. " + exception.getMessage(), exception);
         }
         return connection;
     }
@@ -123,8 +129,8 @@ public class DatabaseUtility {
 
             connection.commit();
             connection.close();
-        } catch (DatabaseConnectionException | SQLException | IOException e) {
-            throw new DatabaseInitializationException("Could not initialize database. " + e.getMessage(), e);
+        } catch (DatabaseConnectionException | SQLException | IOException exception) {
+            throw new DatabaseInitializationException("Could not initialize database. " + exception.getMessage(), exception);
         }
     }
 
@@ -139,8 +145,8 @@ public class DatabaseUtility {
      * @throws DatabaseGetListException     if it has trouble getting the list
      */
     @SuppressWarnings("unchecked")  // Hibernate API requires unchecked OK per guidelines
-    public static <T extends DatabaseAccessObject> List<T> getListBy(
-            String property, Object value, Class T) throws DatabaseGetListException {
+    public static <T extends DatabaseAccessObject> List<T> getListBy(String property, Object value, Class T) throws DatabaseGetListException {
+
         Session session = null;
         Transaction transaction = null;
         List<T> returnValue = new ArrayList<T>();
@@ -157,11 +163,11 @@ public class DatabaseUtility {
             returnValue = (List<T>) criteria.list();
 
             transaction.commit();
-        } catch (HibernateException e) {
+        } catch (HibernateException exception) {
             if (transaction != null && transaction.isActive()) {
                 transaction.rollback();  // close transaction
             }
-            throw new DatabaseGetListException("Could not get list of " + T.getName() + "s.");
+            throw new DatabaseGetListException("Could not get list of " + T.getName() + "s. " + exception.getMessage(), exception);
         } finally {
             if (session != null) {
                 session.close();
@@ -187,11 +193,11 @@ public class DatabaseUtility {
             session.saveOrUpdate(o);
 
             transaction.commit();
-        } catch (HibernateException e) {
+        } catch (HibernateException exception) {
             if (transaction != null && transaction.isActive()) {
                 transaction.rollback();  // close transaction
             }
-            throw new DatabaseAddOrUpdateException("Could not add or update " + o.toString() + ".");
+            throw new DatabaseAddOrUpdateException("Could not add or update " + o.toString() + ". " + exception.getMessage(), exception);
         } finally {
             if (transaction != null && transaction.isActive()) {
                 transaction.commit();

@@ -18,7 +18,6 @@ import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
@@ -34,52 +33,133 @@ public class StockSearch extends HttpServlet {
     private static final String SYMBOL_PARAMETER_KEY = "symbol";
     private static final String FROM_PARAMETER_KEY = "from";
     private static final String UNTIL_PARAMETER_KEY = "until";
+    private static final String SERVICE_TYPE_PARAMETER_KEY = "service";
     private static final String INTERVAL_PARAMETER_KEY = "interval";
 
+    private static final String HTML_INPUT_DATE_FORMAT = "yyyy-MM-dd";
+
+    private static final String RESULTS_JSP = "/stockQuoteResults.jsp";
+
+    /**
+    Does the work of the Stock Quote Application (on post).
+     */
     public void doPost(HttpServletRequest request, HttpServletResponse response)
             throws IOException, ServletException {
 
-        List<StockQuote> stockQuoteList = new ArrayList<>();
+        HttpSession session = request.getSession(false);
+        if (session!= null) {
+            session.invalidate();
+        }
 
         try {
 
-            /* get parameters */
+            /* get {@code stockQuoteList} */
+
+            List<StockQuote> stockQuoteList = getStockQuotes(request);
+
+            /* put {@code stockQuoteList} in the session */
+
+            session = request.getSession();
+            session.setAttribute("stockQuoteList", stockQuoteList);
+
+            /* return to results jsp */
+
+            forward(request, response);
+
+        } catch (BadRequestException exception) {
+
+            session = request.getSession();
+            session.setAttribute("errorMessage", exception.getMessage());
+
+            forward(request, response);
+        }
+    }
+
+    /**
+     * Gets the list of stock quotes requested.
+     *
+     * @param request               an instance of {@code HttpServletRequest} that encapsulates all the parameters
+     *                              passed to the servlet
+     * @return                      a list of stock quotes that satisfy the parameters in {@code request}
+     * @throws BadRequestException  if an error occurs while trying to get the stock quotes
+     */
+    private List<StockQuote> getStockQuotes(HttpServletRequest request) throws BadRequestException {
+
+        List<StockQuote> stockQuoteList;
+
+        try {
+
+             /* process parameters */
 
             String symbol = request.getParameter(SYMBOL_PARAMETER_KEY);
             String fromDatePassed = request.getParameter(FROM_PARAMETER_KEY);
             String untilDatePassed = request.getParameter(UNTIL_PARAMETER_KEY);
+            String serviceTypePassed = request.getParameter(SERVICE_TYPE_PARAMETER_KEY);
             String intervalPassed = request.getParameter(INTERVAL_PARAMETER_KEY);
 
             Calendar fromDate = Calendar.getInstance();
-            fromDate.setTime(new SimpleDateFormat("yyyy-MM-dd").parse(fromDatePassed));
+            fromDate.setTime(new SimpleDateFormat(HTML_INPUT_DATE_FORMAT).parse(fromDatePassed));
 
             Calendar untilDate = Calendar.getInstance();
-            untilDate.setTime(new SimpleDateFormat("yyyy-MM-dd").parse(untilDatePassed));
+            untilDate.setTime(new SimpleDateFormat(HTML_INPUT_DATE_FORMAT).parse(untilDatePassed));
 
+            ServiceFactory.ServiceType serviceType = ServiceFactory.ServiceType.fromString(serviceTypePassed);
             StockQuoteInterval interval = StockQuoteInterval.fromString(intervalPassed);
 
             /* get stock quotes */
 
-            StockService stockService = ServiceFactory.getStockService();
-            stockQuoteList = new ArrayList<>();
-            stockQuoteList = stockService.getStockQuoteList(symbol, fromDate, untilDate, interval);
+            stockQuoteList = getStockQuotes(symbol, fromDate, untilDate, serviceType, interval);
 
         } catch (ParseException exception) {
+
             LOGGER.error("Invalid arguments. " + exception.getMessage());
+            throw new BadRequestException("You selected invalid arguments.");
+
         } catch (StockServiceException exception) {
-            LOGGER.error("Unable to get quotes. " + exception.getMessage());
+
+            LOGGER.error(exception.getMessage());
+            throw new BadRequestException(exception.getMessage());
         }
 
-        /* put stockQuoteList in the session */
+        return stockQuoteList;
+    }
 
-        HttpSession session = request.getSession();
-        session.setAttribute("stockQuoteList", stockQuoteList);
+    /**
+     * Gets a list of stock quotes for the company indicated by the given symbol, one for each period in the given
+     * interval in the given date range.
 
-        /* forward the user to stockQuoteResults.jsp */
+     * @param symbol                    a stock symbol of a company, e.g. "APPL" for Apple
+     * @param from                      the date of the first stock quote
+     * @param until                     the date of the last stock quote
+     * @param interval                  the interval between which stock quotes should be obtained, i.e. if DAILY, then
+     *                                  one per day
+     * @return                          a list of stock quotes for the company with the given symbol, one for each
+     *                                  period in the given interval in the given date range
+     * @throws StockServiceException    if an error occurs while trying to get the stock quotes
+     * @throws BadRequestException      if unable to find any stock quotes matching the request
+     */
+    private List<StockQuote> getStockQuotes(String symbol, Calendar from, Calendar until, ServiceFactory.ServiceType serviceType, StockQuoteInterval interval) throws StockServiceException, BadRequestException {
 
+        List<StockQuote> stockQuoteList;
+        StockService stockService = ServiceFactory.getStockService(serviceType);
+
+        stockQuoteList = stockService.getStockQuoteList(symbol, from, until, interval);
+
+        if (stockQuoteList.isEmpty()) {
+            String serviceName = serviceType == ServiceFactory.ServiceType.DATABASE ? "The database" : "Yahoo";
+            SimpleDateFormat format = new SimpleDateFormat("MM/dd/yy");
+            String message =
+                    String.format("%s has no %s stock data for symbol %s from %s to %s.",
+                                   serviceName, interval.toString().toLowerCase(), symbol, format.format(from.getTime()), format.format(until.getTime()));
+            throw new BadRequestException(message);
+        }
+        return stockQuoteList;
+    }
+
+    private void forward(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         ServletContext servletContext = getServletContext();
         RequestDispatcher dispatcher =
-                servletContext.getRequestDispatcher("/stockQuoteResults.jsp");
+                servletContext.getRequestDispatcher(RESULTS_JSP);
         dispatcher.forward(request, response);
     }
 }

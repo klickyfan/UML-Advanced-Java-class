@@ -42,6 +42,14 @@ final public class StockQuote  {
     }
 
     /**
+     * @return a {@code String} representation of a stock quote's date
+     */
+    public String getDateRecordedAsString() {
+        SimpleDateFormat format = new SimpleDateFormat("MM/dd/yy HH:mm");
+        return format.format(dateRecorded);
+    }
+
+    /**
      * @param obj   a {@code StockQuote} instance
      * @return      true if two {@code StockQuotes} are equal
      */
@@ -80,7 +88,6 @@ final public class StockQuote  {
      */
     @Override
     public int hashCode() {
-
         // Note conversion of BigDecimal stockPrice to double. We have to do this because two mathematically equivalent
         // BigDecimals could product different hash codes due to scaling.
         if (stockPrice != null) {
@@ -90,12 +97,14 @@ final public class StockQuote  {
         }
     }
 
+    /**
+     * @return a {@code String} representation of a {@code StockQuote} instance
+     */
     @Override
     public String toString() {
-        SimpleDateFormat format = new SimpleDateFormat("MM/dd/yy HH:mm");
         return "StockQuote{" +
                 "symbol='" + stockSymbol + '\'' +
-                ", date=" + format.format(dateRecorded) +
+                ", date=" + getDateRecordedAsString() +
                 ", price=" + stockPrice +
                 '}';
     }

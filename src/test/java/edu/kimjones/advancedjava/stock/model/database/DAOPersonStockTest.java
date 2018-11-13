@@ -1,8 +1,7 @@
 package edu.kimjones.advancedjava.stock.model.database;
 
 import nl.jqno.equalsverifier.EqualsVerifier;
-
-import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -14,46 +13,46 @@ import static org.junit.Assert.*;
  */
 public class DAOPersonStockTest {
 
-    private final int id = 10;
-    private final String stockSymbol = "AAPL";
+    private static final int ID = 10;
+    private static final String STOCK_SYMBOL = "AAPL";
 
-    private DAOPerson person;
-    private DAOPersonStock personStock;
+    private static DAOPerson person;
+    private static DAOPersonStock personStock;
 
-    @Before
-    public void setUp() {
-        this.person = new DAOPerson();
-        this.person.setId(DAOPersonTest.id);
-        this.person.setUsername(DAOPersonTest.username);
-        this.person.setFirstName(DAOPersonTest.firstName);
-        this.person.setLastName(DAOPersonTest.lastName);
-        this.person.setBirthDate(DAOPersonTest.birthDate);
+    @BeforeClass
+    public static void setUp() {
+        person = new DAOPerson();
+        person.setId(DAOPersonTest.ID);
+        person.setUsername(DAOPersonTest.USERNAME);
+        person.setFirstName(DAOPersonTest.FIRST_NAME);
+        person.setLastName(DAOPersonTest.LAST_NAME);
+        person.setBirthDate(DAOPersonTest.BIRTH_DATE);
 
-        this.personStock = new DAOPersonStock();
-        this.personStock.setId(id);
-        this.personStock.setPerson(person);
-        this.personStock.setStockSymbol(stockSymbol);
+        personStock = new DAOPersonStock();
+        personStock.setId(ID);
+        personStock.setPerson(person);
+        personStock.setStockSymbol(STOCK_SYMBOL);
     }
 
     @Test
     public void testPersonStocksGetterAndSettersPositive() {
-        assertEquals("id matches", id, personStock.getId());
+        assertEquals("ID matches", ID, personStock.getId());
         assertEquals("person matches", person, personStock.getPerson());
-        assertEquals("stock symbol matches", stockSymbol, personStock.getStockSymbol());
+        assertEquals("stock symbol matches", STOCK_SYMBOL, personStock.getStockSymbol());
     }
 
     @Test
     public void testPersonStocksGetterAndSettersNegative() {
-        assertNotEquals("id does not match", 20, personStock.getId());
+        assertNotEquals("ID does not match", 20, personStock.getId());
         assertNotSame("person does not match", new DAOPerson(), personStock.getPerson());
         assertNotSame("stock symbol does not", "OOOO", personStock.getStockSymbol());
     }
 
     @Test
     public void testToString() {
-        assertTrue("toString has lastName", personStock.toString().contains(DAOPersonTest.lastName));
-        assertTrue("toString has firstName", personStock.toString().contains(DAOPersonTest.firstName));
-        assertTrue("toString has stockSymbol", personStock.toString().contains(stockSymbol));
+        assertTrue("toString has LAST_NAME", personStock.toString().contains(DAOPersonTest.LAST_NAME));
+        assertTrue("toString has FIRST_NAME", personStock.toString().contains(DAOPersonTest.FIRST_NAME));
+        assertTrue("toString has STOCK_SYMBOL", personStock.toString().contains(STOCK_SYMBOL));
     }
 
     @Test
