@@ -1,6 +1,7 @@
 package edu.kimjones.advancedjava.stock.model;
 
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Objects;
 
@@ -87,5 +88,15 @@ final public class StockQuote  {
         } else {
             return Objects.hash(stockSymbol, dateRecorded);
         }
+    }
+
+    @Override
+    public String toString() {
+        SimpleDateFormat format = new SimpleDateFormat("MM/dd/yy HH:mm");
+        return "StockQuote{" +
+                "symbol='" + stockSymbol + '\'' +
+                ", date=" + format.format(dateRecorded) +
+                ", price=" + stockPrice +
+                '}';
     }
 }
