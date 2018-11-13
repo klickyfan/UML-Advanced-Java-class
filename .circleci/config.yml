@@ -1,37 +1,38 @@
 # Java Maven CircleCI 2.0 configuration file
 #
-# Check https://circleci.com/docs/2.0/language-java/ for more details
+# Check https://circleci.com/docs/2.0/language-java for more details
 #
 version: 2
 jobs:
   build:
-    docker:
-    # specify the version you desire here
+    docker: 
     - image: circleci/openjdk:8-jdk
-
-    # Specify service dependencies here if necessary
-    # CircleCI maintains a library of pre-built images
-    # documented at https://circleci.com/docs/2.0/circleci-images/
-    # - image: circleci/postgres:9.4
-
-    working_directory: ~/java_class
-
+    - image: circleci/mysql:5.7
+      command: [--default-authentication-plugin=mysql_native_password]
+      environment:
+      - MYSQL_ROOT_PASSWORD: r00tp@ssw0rd
+      - MYSQL_DATABASE: stocks
+      - MYSQL_USER: monty
+      - MYSQL_PASSWORD: m0nty
+      
+    working_directory: ~/repo
+    
     environment:
-      # Customize the JVM maximum heap limit
-      MAVEN_OPTS: -Xmx3200m
-
+      MAVEN_OPTS: -Xmx3200m -Dmaven.wagon.http.ssl.insecure=true -Dmaven.wagon.http.ssl.allowall=true -Dmaven.wagon.http.ssl.ignore.validity.dates=true
+ 
     steps:
+    
     - checkout
-
-    # Download and cache dependencies
+    
+    - run: sudo apt install -y mysql-client
+    
     - restore_cache:
         keys:
         - v1-dependencies-{{ checksum "pom.xml" }}
-        # fallback to using the latest cache if no exact match is found
         - v1-dependencies-
 
     - run: mvn dependency:go-offline
-
+#adding a comment here to poke circleci
     - save_cache:
         paths:
         - ~/.m2

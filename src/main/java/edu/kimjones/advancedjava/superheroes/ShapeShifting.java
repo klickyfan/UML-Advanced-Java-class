@@ -1,4 +1,4 @@
-package edu.kimjones.advancedjava;
+package edu.kimjones.advancedjava.superheroes;
 
 import java.util.Objects;
 

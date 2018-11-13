@@ -1,9 +1,9 @@
 package edu.kimjones.advancedjava.stock.utilities;
 
 /**
- * This class is used to signal a problem initializing to a database.
+ * This class is used to signal invalid XML or other JAXB related issues.
  */
-public class DatabaseInitializationException extends Exception {
+public class InvalidXMLException extends Exception{
 
     /**
      * This method constructs a new exception with the specified detail message. Note that it does not initialize the
@@ -11,7 +11,9 @@ public class DatabaseInitializationException extends Exception {
      *
      * @param message   a detail message (which may be retrieved by the {@link #getMessage()} method)
      */
-    public DatabaseInitializationException(String message) { super(message); }
+    public InvalidXMLException(String message) {
+        super(message);
+    }
 
     /**
      * This method constructs a new exception with the specified detail message and cause. Note that the detail
@@ -22,7 +24,7 @@ public class DatabaseInitializationException extends Exception {
      * @param cause     a cause (which may be retrieved by the {@link #getCause()} method) (A <tt>null</tt> value is
      *                  permitted, and indicates that the cause is nonexistent or unknown.)
      */
-    public DatabaseInitializationException(String message, Throwable cause) {
+    protected InvalidXMLException(String message, Throwable cause) {
         super(message, cause);
     }
 }

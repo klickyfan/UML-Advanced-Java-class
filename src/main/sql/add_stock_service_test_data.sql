@@ -403,4 +403,3 @@ INSERT INTO quotes (symbol, time, price) VALUES('OOOO', STR_TO_DATE('9/20/2018 3
 INSERT INTO quotes (symbol, time, price) VALUES('OOOO', STR_TO_DATE('9/20/2018 3:57 PM', '%m/%d/%Y %h:%i %p'), '118.55');
 INSERT INTO quotes (symbol, time, price) VALUES('OOOO', STR_TO_DATE('9/20/2018 3:58 PM', '%m/%d/%Y %h:%i %p'), '118.44');
 INSERT INTO quotes (symbol, time, price) VALUES('OOOO', STR_TO_DATE('9/20/2018 3:59 PM', '%m/%d/%Y %h:%i %p'), '118.55');
-

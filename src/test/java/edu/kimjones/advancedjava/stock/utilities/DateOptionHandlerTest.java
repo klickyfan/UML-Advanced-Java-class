@@ -2,20 +2,25 @@ package edu.kimjones.advancedjava.stock.utilities;
 
 import junitparams.JUnitParamsRunner;
 import junitparams.Parameters;
+
 import org.hamcrest.Matcher;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+
 import java.util.Date;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.core.AllOf.allOf;
 import static org.hamcrest.core.StringContains.containsString;
+
 import static org.junit.Assert.assertThat;
 
 /**
@@ -36,9 +41,7 @@ public class DateOptionHandlerTest {
     @SuppressWarnings("unused")
     @Parameters
     private Object[] parsableOptions() throws ParseException {
-
         SimpleDateFormat dateFormat = new SimpleDateFormat(DateOptionHandler.DATE_FORMAT);
-
         return new Object[][] {
                 { new String[] {"-d", "3/11/1968"}, dateFormat.parse("3/11/1968")},
                 { new String[] {"-d", "09/30/2018"}, dateFormat.parse("09/30/2018")}
@@ -46,9 +49,11 @@ public class DateOptionHandlerTest {
     }
 
     @SuppressWarnings("unused")
+    @Parameters
     private Object[] notParsableOptions() {
+        //noinspection unchecked
         return new Object[][]{
-                {new String[]{"-d", "not a date"}, allOf(containsString("not a date"))}
+                { new String[] {"-d", "not a date"}, allOf(containsString("not a date"))}
         };
     }
 
@@ -62,7 +67,6 @@ public class DateOptionHandlerTest {
     @Test
     @Parameters(method = "notParsableOptions")
     public void testDateOptionHandlerNegative(String[] args, Matcher<String> check) {
-
         try {
             new CmdLineParser(option).parseArgument(args);
         } catch (CmdLineException e) {

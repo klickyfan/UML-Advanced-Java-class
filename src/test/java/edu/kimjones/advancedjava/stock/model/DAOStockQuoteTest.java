@@ -1,32 +1,34 @@
 package edu.kimjones.advancedjava.stock.model;
 
 import nl.jqno.equalsverifier.EqualsVerifier;
+
 import org.junit.Before;
 import org.junit.Test;
 
 import java.math.BigDecimal;
+
 import java.time.LocalDate;
+
 import java.util.Date;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.*;
 
 /**
- * This class is for testing the class StockQuote.
+ * This class is for testing the class {@code DAOStockQuote}.
  *
  * @author Kim Jones
  */
-public class StockQuoteTest {
+public class DAOStockQuoteTest {
 
-    private String stockSymbol = "AAPL";
-    private BigDecimal stockPrice = BigDecimal.valueOf(100.0);
+    private final String stockSymbol = "AAPL";
+    private final BigDecimal stockPrice = BigDecimal.valueOf(100.0);
     private Date dateRecorded;
     private Date dateNotRecorded; // for negative test
 
-    private StockQuote stockQuote;
+    private DAOStockQuote stockQuote;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
 
         LocalDate localDate0 = LocalDate.of(2018, 9, 16);
         this.dateRecorded = java.sql.Date.valueOf(localDate0);
@@ -34,7 +36,7 @@ public class StockQuoteTest {
         LocalDate localDate1 = LocalDate.of(2017, 1, 1);
         this.dateNotRecorded = java.sql.Date.valueOf(localDate1);
 
-        this.stockQuote = new StockQuote(this.stockSymbol, this.stockPrice, this.dateRecorded);
+        this.stockQuote = new DAOStockQuote(this.stockSymbol, this.stockPrice, this.dateRecorded);
     }
 
     @Test
@@ -44,7 +46,7 @@ public class StockQuoteTest {
 
     @Test
     public void testSymbolNegative() {
-        assertFalse("symbol does not match", "BMY" == this.stockQuote.getStockSymbol());
+        assertNotSame("symbol does not match", "BMY", this.stockQuote.getStockSymbol());
     }
 
     @Test
@@ -54,7 +56,7 @@ public class StockQuoteTest {
 
     @Test
     public void testPriceNegative() {
-        assertFalse("price does not match", BigDecimal.valueOf(1.0) == this.stockQuote.getStockPrice());
+        assertNotSame("price does not match", BigDecimal.valueOf(1.0), this.stockQuote.getStockPrice());
     }
 
     @Test
@@ -64,11 +66,11 @@ public class StockQuoteTest {
 
     @Test
     public void testDateNegative() {
-        assertFalse("date does not match", this.dateNotRecorded == this.stockQuote.getDateRecorded());
+        assertNotSame("date does not match", this.dateNotRecorded, this.stockQuote.getDateRecorded());
     }
 
     @Test
-    public void equalsContract() {
-        EqualsVerifier.forClass(StockQuote.class).verify();
+    public void testEqualsContract() {
+        EqualsVerifier.forClass(DAOStockQuote.class).verify();
     }
 }

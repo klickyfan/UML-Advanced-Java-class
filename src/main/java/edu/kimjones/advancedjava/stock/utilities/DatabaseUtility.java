@@ -1,15 +1,22 @@
 package edu.kimjones.advancedjava.stock.utilities;
 
-import com.google.common.util.concurrent.UncheckedExecutionException;
 import com.ibatis.common.jdbc.ScriptRunner;
-import org.jasypt.encryption.pbe.StandardPBEStringEncryptor;
-import org.jasypt.properties.EncryptableProperties;
 
-import java.io.*;
+import edu.kimjones.advancedjava.stock.services.DatabasePersonService;
+
+import org.hibernate.SessionFactory;
+import org.hibernate.cfg.Configuration;
+import org.hibernate.service.ServiceRegistry;
+import org.hibernate.service.ServiceRegistryBuilder;
+
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.Properties;
 
 /**
  * This class encapsulates database related utility methods. For it to function properly, the working directory of the
@@ -17,96 +24,106 @@ import java.util.Properties;
  * {@code driver} (a JDBC driver), {@code url}(the url at which the database may be reached, {@code username} (the
  * username to use when connecting to the database), and {@code password} (the password to use when connecting to the
  * database).
- *
- * This class uses Jasypt (http://www.jasypt.org/encrypting-configuration.html) to decrypt encrypted values in
- * database.properties.
  */
 public class DatabaseUtility {
 
-    private static final String PROPERTY_FILE = "database.properties";
+    public static final String initializationFile = "./src/main/sql/create_stocks_database.sql";
 
-    // password needed by Jasypt to decrypt the password property in database.properties
-    private static final String JASYPT_PASSWORD = "wordsarewind";
+    private static SessionFactory sessionFactory; // for use by Hibernate
+    private static Configuration configuration; // for use by Hibernate
 
-    private static Properties properties;
+    private static final String HIBERNATE_CONFIGURATION_FILE = "hibernate.cfg.xml";
+    private static final String DATABASE_DRIVER_CLASS = "hibernate.connection.driver_class";
+    private static final String DATABASE_USERNAME = "hibernate.connection.username";
+    private static final String DATABASE_PASSWORD = "hibernate.connection.password";
+    private static final String DATABASE_URL = "hibernate.connection.url";
 
     /**
-     * This static initializer gets the properties that will be needed by the other methods of this class.
+     * @return a Hibernate {@code SessionFactory} for use with database transactions
      */
-    static {
+    public static SessionFactory getSessionFactory() {
 
-        try {
+        // singleton pattern
+        synchronized (DatabasePersonService.class) {
+            if (sessionFactory == null) {
 
-            File f = new File(PROPERTY_FILE);
+                Configuration configuration = getConfiguration();
 
-            // create an encryptor for decrypting the values in our database.properties
-            StandardPBEStringEncryptor encryptor = new StandardPBEStringEncryptor();
-            encryptor.setPassword(JASYPT_PASSWORD);
+                ServiceRegistry serviceRegistry = new ServiceRegistryBuilder()
+                        .applySettings(configuration.getProperties())
+                        .buildServiceRegistry();
 
-            // create an EncryptableProperties object and load it the way one would an ordinary Properties object
-            properties = new EncryptableProperties(encryptor);
-            properties.load(new FileInputStream(f));
-
-            // properties.list(System.out);
-
-        } catch (FileNotFoundException ex) {
-
-            throw new UncheckedExecutionException("Unable to find " + PROPERTY_FILE + ".", ex);
-
-        } catch (IOException ex) {
-
-            throw new UncheckedIOException("Unable to load " + PROPERTY_FILE + ".", ex);
+                sessionFactory = configuration.buildSessionFactory(serviceRegistry);
+            }
         }
+        return sessionFactory;
     }
 
     /**
-     * This method returns a handle to a new database connection.
-     *
+     * @return a Hibernate {@code Configuration}
+     */
+    private static Configuration getConfiguration() {
+
+        synchronized (DatabaseUtility.class) {
+            if (configuration == null) {
+                configuration = new Configuration();
+                configuration.configure(HIBERNATE_CONFIGURATION_FILE);
+            }
+        }
+        return configuration;
+    }
+
+    /**
      * @return                                  a database connection
-     * @throws DatabaseConnectionException
+     * @throws DatabaseConnectionException      if a connection to the database cannot be established
      */
     public static Connection getConnection() throws DatabaseConnectionException {
 
         Connection connection = null;
+        Configuration configuration = getConfiguration();
 
         try {
-            Class.forName(properties.getProperty("driver"));
-            connection = DriverManager.getConnection(
-                    properties.getProperty("url"), properties.getProperty("username"), properties.getProperty("password"));
-        } catch (ClassNotFoundException  | SQLException e)  {
-            throw new DatabaseConnectionException("Could not connection to database." + e.getMessage(), e);
-        }
+            Class.forName(configuration.getProperty(DATABASE_DRIVER_CLASS));
+            String databaseUrl = configuration.getProperty(DATABASE_URL);
+            String username = configuration.getProperty(DATABASE_USERNAME);
+            String password = configuration.getProperty(DATABASE_PASSWORD);
 
+            connection = DriverManager.getConnection(databaseUrl, username, password);
+        } catch (ClassNotFoundException | SQLException e) {
+            throw new DatabaseConnectionException("Could not connect to database. " + e.getMessage(), e);
+        }
         return connection;
     }
 
     /**
-     * This method runs connects to a database and runs a script to initialize its schema.
+     * Connects to a database and runs the given script to initialize its schema.
      *
-     * @param initializationScript                  full path to the script to run to create the schema
-     * @throws DatabaseInitializationException
+     * @param initializationScript              full path to the script to run to create the schema
+     * @throws DatabaseInitializationException  if the database cannot be initialized
      */
     public static void initializeDatabase(String initializationScript) throws DatabaseInitializationException {
 
         Connection connection = null;
 
         try {
-
             connection = getConnection();
+            connection.setAutoCommit(false);
+
             ScriptRunner runner = new ScriptRunner(connection, false, false);
+
+            // stop the ScriptRunner from printing the sql in the initializationScript to the console
+            runner.setErrorLogWriter(null);
+            runner.setLogWriter(null);
+
             InputStream inputStream = new  FileInputStream(initializationScript);
             InputStreamReader reader = new InputStreamReader(inputStream);
-
             runner.runScript(reader);
-
             reader.close();
-            //connection.commit();
+
+            connection.commit();
             connection.close();
-
-        } catch (DatabaseConnectionException | SQLException |IOException e) {
-
-            throw new DatabaseInitializationException("Could not initialize database :" + e.getMessage(), e);
-
+        } catch (DatabaseConnectionException | SQLException | IOException e) {
+            throw new DatabaseInitializationException("Could not initialize database. " + e.getMessage(), e);
         }
     }
 }

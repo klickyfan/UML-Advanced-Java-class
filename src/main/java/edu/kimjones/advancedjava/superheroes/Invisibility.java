@@ -1,4 +1,4 @@
-package edu.kimjones.advancedjava;
+package edu.kimjones.advancedjava.superheroes;
 
 /**
  * This class models the invisibility superpower.

@@ -1,16 +1,17 @@
 package edu.kimjones.advancedjava.stock;
 
-import edu.kimjones.advancedjava.stock.model.StockQuote;
+import edu.kimjones.advancedjava.stock.model.DAOStockQuote;
+import edu.kimjones.advancedjava.stock.services.ServiceFactory;
 import edu.kimjones.advancedjava.stock.services.StockService;
 import edu.kimjones.advancedjava.stock.services.StockServiceException;
-import edu.kimjones.advancedjava.stock.services.StockServiceFactory;
+import edu.kimjones.advancedjava.stock.utilities.DatabaseInitializationException;
+import edu.kimjones.advancedjava.stock.utilities.DatabaseUtility;
 import edu.kimjones.advancedjava.stock.utilities.DateOptionHandler;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
 import org.kohsuke.args4j.spi.StringArrayOptionHandler;
 
-import java.io.IOException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -21,6 +22,8 @@ import java.util.List;
  * @author Kim Jones
  */
 public class StockQuoteApplication {
+
+    private static final int MIN_ARGUMENTS = 6;
 
     @Option(name = "-symbol",
             required = true,
@@ -40,39 +43,47 @@ public class StockQuoteApplication {
             usage = "the last date for which you want a price")
     private Date untilDate;
 
-    @Option(name="-interval",
-            required = false,
+    @Option(name = "-interval",
             usage = "the interval on which you want prices (i.e. DAILY)")
-    public StockService.StockQuoteInterval interval = StockService.StockQuoteInterval.DAILY;
+    private StockService.StockQuoteInterval interval = StockService.StockQuoteInterval.DAILY;
+
+    private Calendar calFromDate;
+    private Calendar calUntilDate;
 
     /**
-     * @param args      3 options are required: one containing a stock symbol, and two containing dates of the form
-     *                  "mm/dd/yyyy"
+     * @param args 3 options are required: one containing a stock symbol, and two containing dates of the form
+     *             "mm/dd/yyyy"
      */
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws DatabaseInitializationException {
+
         new StockQuoteApplication().doMain(args);
+
+        // clean up
+        DatabaseUtility.initializeDatabase(DatabaseUtility.initializationFile);
     }
 
-    private void doMain(String args[]) throws IOException {
-
-        System.out.println("Working Directory = " + System.getProperty("user.dir"));
+    private void doMain(String args[]) {
 
         CmdLineParser parser = new CmdLineParser(this);
+
+        if (args == null || args.length < MIN_ARGUMENTS) {
+            System.err.println("Insufficient options were supplied. %nUsage: ");
+            parser.printUsage(System.err);
+            return;
+        }
 
         try {
             parser.parseArgument(args);
         } catch (CmdLineException e) {
-
-            System.err.println(e.getMessage());
+            System.err.println(e.getMessage() + "%nUsage: ");
             parser.printUsage(System.err);
-
             return;
         }
 
-        Calendar calFromDate = Calendar.getInstance();
+        calFromDate = Calendar.getInstance();
         calFromDate.setTime(fromDate);
 
-        Calendar calUntilDate = Calendar.getInstance();
+        calUntilDate = Calendar.getInstance();
         calUntilDate.setTime(untilDate);
 
         System.out.printf("Symbol: %s %n", symbol);
@@ -84,58 +95,78 @@ public class StockQuoteApplication {
 
         try {
 
-            StockService stockService = StockServiceFactory.createStockService();
+            initializeDatabase();
 
-            /**
-             * get the latest price quote for a stock
+            StockService stockService = ServiceFactory.getStockService();
+
+            /*
+              get the latest price quote for a stock
              */
-            StockQuote latestQuote = stockService.getLatestStockQuote(symbol);
-
-            System.out.printf("%nThe latest price of stock %s is %.2f %n", symbol, latestQuote.getStockPrice());
+            getLatestStockQuote(stockService);
 
             System.out.printf("%n***** %n%n");
 
-            /**
-             * get the a price quote for a stock on a particular date
+            /*
+              get the a price quote for a stock on a particular date
              */
-
-            StockQuote quoteOnDate = stockService.getStockQuote(symbol, fromDate);
-
-            System.out.printf("%nThe price of stock %s on date %tD is %.2f %n", symbol, quoteOnDate.getDateRecorded(), quoteOnDate.getStockPrice());
+            getDatedStockQuote(stockService);
 
             System.out.printf("%n***** %n%n");
 
-            /**
-             * get a list of price quotes for each day from calFromDate to calUntilDate
+            /*
+              get a list of price quotes for each day from calFromDate to calUntilDate
              */
-
-            List<StockQuote> dailyQuoteList = stockService.getStockQuoteList(symbol, calFromDate, calUntilDate);
-
-            System.out.printf("%n");
-
-            for (StockQuote temp : dailyQuoteList) {
-                System.out.printf("The price of stock %s on date %tD is %.2f %n", temp.getStockSymbol(), temp.getDateRecorded(), temp.getStockPrice());
-            }
+            getStockQuoteList(stockService);
 
             System.out.printf("%n***** %n%n");
 
-            /**
-             * get a list of price quotes for each day from calFromDate to calUntilDate on interval
+            /*
+              get a list of price quotes for each day from calFromDate to calUntilDate on interval
              */
+            getStockQuoteListOnInterval(stockService);
 
-            StockService.StockQuoteInterval interval = StockService.StockQuoteInterval.HOURLY;
-            List<StockQuote> hourlyQuoteList = stockService.getStockQuoteList(symbol, calFromDate, calUntilDate, interval);
-
-            System.out.printf("%n");
-
-            for (StockQuote temp : hourlyQuoteList) {
-                System.out.printf("The price of stock %s at time %tD %tR is %.2f %n", temp.getStockSymbol(), temp.getDateRecorded(), temp.getDateRecorded(), temp.getStockPrice());
-            }
-
+        } catch (DatabaseInitializationException | StockServiceException exception) {
+            System.out.print(exception.getMessage());
         }
-        catch (StockServiceException exception) {
-            System.out.printf("An exception was caught: " + exception.getMessage());
-        }
+    }
 
+    private void initializeDatabase() throws DatabaseInitializationException {
+        DatabaseUtility.initializeDatabase(DatabaseUtility.initializationFile);
+        DatabaseUtility.initializeDatabase("./src/main/sql/add_AAPL_interday_stock_data.sql");
+        DatabaseUtility.initializeDatabase("./src/main/sql/add_AAPL_intraday_stock_data.sql");
+    }
+
+    private void getLatestStockQuote(StockService stockService) throws StockServiceException {
+        DAOStockQuote latestQuote = stockService.getLatestStockQuote(symbol);
+
+        System.out.printf("%nThe latest price of stock %s is %.2f %n", symbol, latestQuote.getStockPrice());
+    }
+
+    private void getDatedStockQuote(StockService stockService) throws StockServiceException {
+        DAOStockQuote quoteOnDate = stockService.getStockQuote(symbol, fromDate);
+
+        System.out.printf("%nThe price of stock %s on date %tD is %.2f %n", symbol, quoteOnDate.getDateRecorded(), quoteOnDate.getStockPrice());
+    }
+
+    private void getStockQuoteList(StockService stockService) throws StockServiceException {
+        List<DAOStockQuote> dailyQuoteList = stockService.getStockQuoteList(symbol, calFromDate, calUntilDate);
+
+        System.out.printf("%n");
+
+        for (DAOStockQuote temp : dailyQuoteList) {
+            System.out.printf("The price of stock %s on date %tD is %.2f %n", temp.getStockSymbol(), temp.getDateRecorded(), temp.getStockPrice());
+        }
+    }
+
+    private void getStockQuoteListOnInterval(StockService stockService) throws StockServiceException {
+        StockService.StockQuoteInterval interval = StockService.StockQuoteInterval.HOURLY;
+        List<DAOStockQuote> hourlyQuoteList = stockService.getStockQuoteList(symbol, calFromDate, calUntilDate, interval);
+
+        System.out.printf("%n");
+
+        for (DAOStockQuote temp : hourlyQuoteList) {
+            System.out.printf("The price of stock %s at time %tD %tR is %.2f %n", temp.getStockSymbol(), temp.getDateRecorded(), temp.getDateRecorded(), temp.getStockPrice());
+        }
     }
 }
+

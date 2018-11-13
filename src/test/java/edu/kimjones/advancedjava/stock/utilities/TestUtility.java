@@ -7,7 +7,6 @@ import java.util.Date;
 
 /**
  * This class encapsulates test related utility methods.
- *
  */
 public class TestUtility {
 
@@ -33,13 +32,11 @@ public class TestUtility {
      */
     public static Date addHoursToDate(int hours, Date beforeDate){
 
-        final long ONE_MINUTE_IN_MILLISECONDS = 60000; // millisecs
+        final long ONE_MINUTE_IN_MILLISECONDS = 60000; // milliseconds
 
         long currentTimeInMs = beforeDate.getTime();
         long timeAfterAddingHours = currentTimeInMs + (hours * 60 * ONE_MINUTE_IN_MILLISECONDS);
 
-        Date dateAfterAddingHours = new Date(timeAfterAddingHours);
-
-        return dateAfterAddingHours;
+        return new Date(timeAfterAddingHours);
     }
 }

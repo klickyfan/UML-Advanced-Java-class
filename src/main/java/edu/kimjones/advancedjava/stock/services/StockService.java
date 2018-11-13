@@ -1,10 +1,14 @@
 package edu.kimjones.advancedjava.stock.services;
 
-import edu.kimjones.advancedjava.stock.model.StockQuote;
+import edu.kimjones.advancedjava.stock.model.DAOStockQuote;
 
 import javax.annotation.concurrent.Immutable;
 import javax.validation.constraints.NotNull;
+
+import java.math.BigDecimal;
+
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -26,7 +30,7 @@ public interface StockService {
      *  This enum represents an interval on which stock quotes should be obtained.
      */
     @Immutable
-    public enum StockQuoteInterval {
+    enum StockQuoteInterval {
 
         HOURLY (Calendar.HOUR, 1, "DATE(time), HOUR(time)"),
         DAILY (Calendar.DATE, 1, "DATE(time)");
@@ -50,11 +54,11 @@ public interface StockService {
      * This method gets a stock quote (containing the current price) for the company indicated by the given symbol.
      *
      * @param symbol                    a stock symbol of a company, e.g. "APPL" for Apple
-     * @return                          an instance of <CODE>StockQuote</CODE>(containing the current price) for the
+     * @return                          an instance of <CODE>DAOStockQuote</CODE>(containing the current price) for the
      *                                  company with the given symbol
      * @throws StockServiceException    if an exception occurs when trying to get the quote
      */
-    StockQuote getLatestStockQuote(@NotNull String symbol) throws StockServiceException;
+    DAOStockQuote getLatestStockQuote(@NotNull String symbol) throws StockServiceException;
 
     /**
      * This method gets a stock quote (containing the current price) for the company indicated by the given symbol on
@@ -62,11 +66,11 @@ public interface StockService {
      *
      * @param symbol                    a stock symbol of a company, e.g. "APPL" for Apple
      * @param date                      a date
-     * @return                          instance of <CODE>StockQuote</CODE>(containing the current price) for the
+     * @return                          instance of <CODE>DAOStockQuote</CODE>(containing the current price) for the
      *                                  company with the given symbol on the given date
      * @throws StockServiceException    if an exception occurs when trying to get the quote
      */
-    StockQuote getStockQuote(@NotNull String symbol, @NotNull java.util.Date date) throws StockServiceException;
+    DAOStockQuote getStockQuote(@NotNull String symbol, @NotNull java.util.Date date) throws StockServiceException;
 
     /**
      * This function gets a list of stock quotes for the company indicated by the given symbol, one for each day in the
@@ -79,7 +83,7 @@ public interface StockService {
      *                                  in the date range given
      * @throws StockServiceException    if an exception occurs when trying to get the quote
      */
-    List<StockQuote> getStockQuoteList(@NotNull String symbol, @NotNull Calendar from, @NotNull Calendar until) throws StockServiceException;
+    List<DAOStockQuote> getStockQuoteList(@NotNull String symbol, @NotNull Calendar from, @NotNull Calendar until) throws StockServiceException;
 
     /**
      * This function gets a list of stock quotes for the company indicated by the given symbol, one for each period
@@ -94,5 +98,19 @@ public interface StockService {
      *                                  period in the given interval in the given date range
      * @throws StockServiceException    if an exception occurs when trying to get the quote
      */
-    List<StockQuote> getStockQuoteList(@NotNull String symbol, @NotNull Calendar from, @NotNull Calendar until, @NotNull StockQuoteInterval interval) throws StockServiceException;
+    List<DAOStockQuote> getStockQuoteList(@NotNull String symbol, @NotNull Calendar from, @NotNull Calendar until, @NotNull StockQuoteInterval interval) throws StockServiceException;
+
+    /**
+     * This method adds a new stock quote to the list of stocks already managed by the service, or updates a stock
+     * already in that list.
+
+     * @param stockSymbol               the symbol of a company
+     * @param stockPrice                the price of that company's stock
+     * @param dateRecorded              the date of the price
+     *
+     * @throws StockServiceException   if a service can not read or write the requested data or otherwise perform the
+     *                                  requested operation
+     */
+    void addOrUpdateStockQuote(@NotNull String stockSymbol,  @NotNull BigDecimal stockPrice, @NotNull Date dateRecorded) throws StockServiceException;
 }
+

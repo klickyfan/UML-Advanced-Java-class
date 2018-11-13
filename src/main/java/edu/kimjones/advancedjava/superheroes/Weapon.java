@@ -1,4 +1,4 @@
-package edu.kimjones.advancedjava;
+package edu.kimjones.advancedjava.superheroes;
 
 /**
  * This interface specifies what a weapon must do.
@@ -12,6 +12,6 @@ public interface Weapon {
      *
      * @param enemyName     the name of the enemy to attack
      */
-    public void attackEnemy(String enemyName);
+    void attackEnemy(String enemyName);
 
 }

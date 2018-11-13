@@ -6,6 +6,14 @@ package edu.kimjones.advancedjava.stock.utilities;
 public class DatabaseConnectionException extends Exception {
 
     /**
+     * This method constructs a new exception with the specified detail message. Note that it does not initialize the
+     * cause, which may subsequently be initialized by a call to {@link #initCause}.
+     *
+     * @param message   a detail message (which may be retrieved by the {@link #getMessage()} method)
+     */
+    public DatabaseConnectionException(String message) { super(message); }
+
+    /**
      * This method constructs a new exception with the specified detail message and cause. Note that the detail
      * message associated with {@code cause} is <i>not</i> automatically incorporated in this exception's detail
      * message.

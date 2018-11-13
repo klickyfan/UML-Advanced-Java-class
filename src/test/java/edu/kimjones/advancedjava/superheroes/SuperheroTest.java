@@ -1,7 +1,7 @@
-package edu.kimjones.advancedjava;
+package edu.kimjones.advancedjava.superheroes;
 
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.Assert.*;
 
@@ -12,17 +12,17 @@ import static org.junit.Assert.*;
  */
 public class SuperheroTest {
 
-    private String name = "Java Man";
-    private Gender gender = Gender.Male;
-    private String shape = "lion";
-    private ArrayList<Superpower> superpowers = new ArrayList<Superpower>();
-    private Weapon weapon = new Sword();
-    private String warCry = "For UML!";
+    private final String name = "Java Man";
+    private final Gender gender = Gender.Male;
+    private final String shape = "lion";
+    private final ArrayList<Superpower> superpowers = new ArrayList<Superpower>();
+    private final Weapon weapon = new Sword();
+    private final String warCry = "For UML!";
 
     private Superhero superhero;
 
     @org.junit.Before
-    public void setUp() throws Exception {
+    public void setUp() {
 
         this.superpowers.add(new Invisibility());
         this.superpowers.add(new ShapeShifting(this.shape));
@@ -37,7 +37,7 @@ public class SuperheroTest {
 
     @org.junit.Test
     public void testNameNegative() {
-        assertFalse("name does not match", "Git the Mighty" == superhero.getName());
+        assertNotSame("name does not match", "Git the Mighty", superhero.getName());
     }
 
     @org.junit.Test
@@ -47,7 +47,7 @@ public class SuperheroTest {
 
     @org.junit.Test
     public void testGenderNegative() {
-        assertFalse("gender does not match", Gender.Female == superhero.getGender());
+        assertNotSame("gender does not match", Gender.Female, superhero.getGender());
     }
 
     @org.junit.Test
@@ -69,15 +69,15 @@ public class SuperheroTest {
     public void testSuperpowersNegative() {
 
         List<Superpower> superpowers = this.superhero.getSuperpowers();
-        assertFalse("there is one superpower", superpowers.size() == 1);
+        assertNotEquals("there is one superpower", 1, superpowers.size());
 
         Superpower superpower0 = superpowers.get(0);
-        assertFalse("superpower 0 is shape shifting", superpower0.getClass() == ShapeShifting.class);
+        assertNotSame("superpower 0 is shape shifting", superpower0.getClass(), ShapeShifting.class);
 
         Superpower superpower1 = superpowers.get(1);
-        assertFalse("superpower 0 is invisibility", superpower1.getClass() == Invisibility.class);
+        assertNotSame("superpower 0 is invisibility", superpower1.getClass(), Invisibility.class);
 
-        assertFalse("shape does not matche", "bear" == ((ShapeShifting) superpower1).getShape());
+        assertNotSame("shape does not match", "bear", ((ShapeShifting) superpower1).getShape());
     }
 
     @org.junit.Test
@@ -87,7 +87,7 @@ public class SuperheroTest {
 
     @org.junit.Test
     public void testWeaponNegative() {
-        assertFalse("weapon does not match", new Fist() == superhero.getWeapon());
+        assertNotSame("weapon does not match", new Fist(), superhero.getWeapon());
     }
 
     @org.junit.Test
@@ -97,7 +97,7 @@ public class SuperheroTest {
 
     @org.junit.Test
     public void testWarCryNegative() {
-        assertFalse("war cry does not match", "Attack!" == superhero.getWarCry());
+        assertNotSame("war cry does not match", "Attack!", superhero.getWarCry());
     }
 
 }
